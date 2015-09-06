@@ -96,10 +96,11 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     private boolean fromDeleteRepo;
 
     /**
-     * There is three ways to get to this activity:
+     * There is four ways to get to this activity:
      * 1. From Android launcher.
      * 2. After user's login.
      * 3. From application, it means, user wants to switch accounts.
+     * 4. From application, it means, user needs to request for new scopes.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +110,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         createBillingService();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.add_account);
 
         final View loginButton = findViewById(R.id.login);
 
@@ -131,19 +133,13 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         fromApp = getIntent().getBooleanExtra(ADDING_FROM_APP, false);
         fromDeleteRepo = getIntent().getBooleanExtra(FROM_DELETE, false);
 
-        toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        toolbar.setNavigationIcon(R.drawable.ic_ab_back_mtrl_am_alpha);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 closeLoginActivity(fromApp, fromDeleteRepo);
             }
         });
-
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        final AccountsAdapter adapter = new AccountsAdapter(this, accounts);
-        recyclerView.setAdapter(adapter);
 
         if (accounts != null) {
             for (Account account : accounts) {

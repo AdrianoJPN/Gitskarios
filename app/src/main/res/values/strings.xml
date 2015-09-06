@@ -417,4 +417,8 @@
     <string name="no_status_checks_num">No checks</string>
     <string name="one_status_checks_num">1 check</string>
     <string name="other_status_checks_num">%d checks</string>
+    <string name="enterprise_url">Hostname</string>
+    <string name="github_enterprise">Github Enterprise</string>
+    <string name="add_account_github">Github account</string>
+    <string name="add_account_github_enterprise">Github enterprise account</string>
 </resources>
