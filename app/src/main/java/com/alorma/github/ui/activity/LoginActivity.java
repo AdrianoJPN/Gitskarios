@@ -112,12 +112,18 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.add_account);
 
-        final View loginButton = findViewById(R.id.login);
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 login();
+            }
+        });
+
+        findViewById(R.id.login_enterprise).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), LoginEnterpriseActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -150,7 +156,6 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         if (fromDeleteRepo) {
             openExternalLogin(new GitHub());
         } else if (fromLogin) {
-            loginButton.setEnabled(false);
             showProgressDialog(R.style.SpotDialog_Login);
             Uri uri = getIntent().getData();
             String code = uri.getQueryParameter("code");
