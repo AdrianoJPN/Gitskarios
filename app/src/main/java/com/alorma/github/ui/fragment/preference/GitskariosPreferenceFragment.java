@@ -37,7 +37,11 @@ public class GitskariosPreferenceFragment extends PreferenceFragment implements 
 
         ComponentName componentName = new ComponentName(getActivity(), Interceptor.class);
         int componentEnabledSetting = getActivity().getPackageManager().getComponentEnabledSetting(componentName);
-        intercetor.setChecked(componentEnabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
+
+        GitskariosSettings settings = new GitskariosSettings(getActivity());
+        boolean interceptState = settings.interceptState(componentEnabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
+
+        intercetor.setChecked(interceptState);
 
         intercetor.setOnPreferenceChangeListener(this);
 
@@ -65,8 +69,11 @@ public class GitskariosPreferenceFragment extends PreferenceFragment implements 
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+        GitskariosSettings settings = new GitskariosSettings(getActivity());
         if (preference.getKey().equals(PREF_INTERCEPT)) {
             Boolean value = (Boolean) newValue;
+
+            settings.saveInterceptState(value);
 
             int flag = value ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
 
@@ -74,10 +81,8 @@ public class GitskariosPreferenceFragment extends PreferenceFragment implements 
             getActivity().getPackageManager().setComponentEnabledSetting(componentName, flag, PackageManager.DONT_KILL_APP);
 
         } else if (preference.getKey().equals(REPOS_SORT)) {
-            GitskariosSettings settings = new GitskariosSettings(getActivity());
             settings.saveRepoSort(String.valueOf(newValue));
         } else if (preference.getKey().equals(REPOS_FILE_TYPE)) {
-            GitskariosSettings settings = new GitskariosSettings(getActivity());
             settings.saveDownloadFileType(String.valueOf(newValue));
         }
         return true;

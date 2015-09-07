@@ -2,6 +2,7 @@ package com.alorma.github.account;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 /**
@@ -25,7 +26,11 @@ public class NotificationsSyncService extends Service {
          */
         synchronized (sSyncAdapterLock) {
             if (sSyncAdapter == null) {
-                sSyncAdapter = new NotificationsSyncAdapter(getApplicationContext(), true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    sSyncAdapter = new NotificationsSyncAdapter(getApplicationContext(), true, true);
+                } else {
+                    sSyncAdapter = new NotificationsSyncAdapter(getApplicationContext(), true);
+                }
             }
         }
     }
