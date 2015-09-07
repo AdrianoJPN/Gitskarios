@@ -365,6 +365,7 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
 
         credentials.storeToken(authToken);
         credentials.storeUsername(account.name);
+        credentials.setApiHostname(AccountsHelper.getUserHostname(this, account));
 
         if (changingUser) {
             lastUsedFragment = null;

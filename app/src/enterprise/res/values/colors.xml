@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#27b042</color>
+    <color name="primary_dark">#1fa22c</color>
+    <color name="primary_alpha">#27b030</color>
+    <color name="primary_dark_alpha">#30a21f</color>
+
+    <color name="primary_light">#c7e7be</color>
+    <color name="accent">#968500</color>
+    <color name="accent_dark">#6e4600</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="icons">#B6B6B6</color>
+    <color name="divider">#B6B6B6</color>
+
+    <color name="commit_stats_bg">#968cff8c</color>
+    <color name="commit_stats_stroke">#a85ce76a</color>
+
+</resources>

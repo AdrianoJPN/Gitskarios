@@ -23,9 +23,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.StyleRes;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,19 +33,16 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.alorma.github.BuildConfig;
 import com.alorma.github.Interceptor;
 import com.alorma.github.R;
-import com.alorma.github.basesdk.ApiClient;
 import com.alorma.github.basesdk.client.BaseClient;
+import com.alorma.github.basesdk.client.StoreCredentials;
 import com.alorma.github.basesdk.client.credentials.GithubDeveloperCredentials;
 import com.alorma.github.sdk.bean.dto.response.Token;
 import com.alorma.github.sdk.bean.dto.response.User;
 import com.alorma.github.sdk.login.AccountsHelper;
-import com.alorma.github.sdk.security.GitHub;
 import com.alorma.github.sdk.services.login.RequestTokenClient;
 import com.alorma.github.sdk.services.user.GetAuthUserClient;
 import com.alorma.github.ui.ErrorHandler;
-import com.alorma.github.ui.adapter.AccountsAdapter;
 import com.android.vending.billing.IInAppBillingService;
-import com.mikepenz.octicons_typeface_library.Octicons;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,7 +66,9 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     private static final String SKU_MULTI_ACCOUNT = "com.alorma.github.multiaccount";
     private static final String SCOPES = "gist,user,notifications,repo,delete_repo";
 
-    public static String OAUTH_URL = "https://github.com/login/oauth/authorize";
+    private static final String GITHUB_COM = "github.com";
+    private static final String LOGIN_PATH = "login/oauth/authorize";
+    private static final String FROM_ENTERPRISE_HOSTNAME = "fromEnterpriseHostname";
 
     private SpotsDialog progressDialog;
     private String accessToken;
@@ -94,6 +93,8 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     private String purchaseId;
     private boolean fromApp;
     private boolean fromDeleteRepo;
+    private TextInputLayout inputHostname;
+    private String currentHostname;
 
     /**
      * There is four ways to get to this activity:
@@ -115,15 +116,23 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                login();
+                login(GITHUB_COM);
             }
         });
+
+        inputHostname = (TextInputLayout) findViewById(R.id.enterpriseUrlHost);
 
         findViewById(R.id.login_enterprise).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), LoginEnterpriseActivity.class);
-                startActivity(intent);
+                if (inputHostname != null && inputHostname.getEditText() != null) {
+                    if (inputHostname.getEditText().getText() != null) {
+                        String hostname = inputHostname.getEditText().getText().toString();
+                        if (!TextUtils.isEmpty(hostname)) {
+                            login(hostname);
+                        }
+                    }
+                }
             }
         });
 
@@ -138,6 +147,9 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         final boolean fromAccounts = getIntent().getBooleanExtra(ADDING_FROM_ACCOUNTS, false);
         fromApp = getIntent().getBooleanExtra(ADDING_FROM_APP, false);
         fromDeleteRepo = getIntent().getBooleanExtra(FROM_DELETE, false);
+
+
+        String enterpriseHostname = getIntent().getStringExtra(FROM_ENTERPRISE_HOSTNAME);
 
         toolbar.setNavigationIcon(R.drawable.ic_ab_back_mtrl_am_alpha);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -154,13 +166,20 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         }
 
         if (fromDeleteRepo) {
-            openExternalLogin(new GitHub());
+            // TODO Change
+            openExternalLogin(GITHUB_COM);
         } else if (fromLogin) {
             showProgressDialog(R.style.SpotDialog_Login);
             Uri uri = getIntent().getData();
             String code = uri.getQueryParameter("code");
 
             fromDeleteRepo = Boolean.valueOf(uri.getQueryParameter("fromDeleteRepo"));
+
+            if (!TextUtils.isEmpty(enterpriseHostname) && !enterpriseHostname.equals(GITHUB_COM)) {
+                currentHostname = enterpriseHostname;
+                StoreCredentials credentials = new StoreCredentials(this);
+                credentials.setApiHostname(enterpriseHostname);
+            }
 
             if (requestTokenClient == null) {
                 requestTokenClient = new RequestTokenClient(LoginActivity.this, code);
@@ -182,7 +201,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
                 requestTokenClient.execute();
             }
         } else if (fromAccounts) {
-            login();
+            login(GITHUB_COM);
         } else if (!fromApp && accounts != null && accounts.length > 0) {
             openMain();
         }
@@ -216,12 +235,12 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         }
     }
 
-    private void login() {
+    private void login(String hostname) {
         if (multipleAccountFeatureRequired()) {
             SKUTask task = new SKUTask();
             task.execute(SKU_MULTI_ACCOUNT);
         } else {
-            openExternalLogin(new GitHub());
+            openExternalLogin(hostname);
         }
     }
 
@@ -229,7 +248,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         return !BuildConfig.DEBUG && accounts != null && accounts.length > 0;
     }
 
-    private void openExternalLogin(ApiClient client) {
+    private void openExternalLogin(String hostname) {
         if (GithubDeveloperCredentials.getInstance().getProvider().getApiClient() == null) {
             MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
             builder.title("API keys fail");
@@ -239,16 +258,33 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
             return;
         }
 
+        Uri.Builder builder = Uri.EMPTY.buildUpon();
+        builder.scheme("https");
+        if (hostname.contains("http://")) {
+            hostname = hostname.replace("http://", "");
+        } else if (hostname.contains("https://")) {
+            hostname = hostname.replace("https://", "");
+        }
+        builder.authority(hostname);
+        builder.appendEncodedPath(LOGIN_PATH);
+
+        String OAUTH_URL = builder.build().toString();
         String url = String.format("%s?client_id=%s&scope=" + SCOPES,
                 OAUTH_URL, GithubDeveloperCredentials.getInstance().getProvider().getApiClient());
 
-        Uri callbackUri = Uri.EMPTY.buildUpon()
+        Uri.Builder callbackBuilder = Uri.EMPTY.buildUpon()
                 .scheme(getString(R.string.oauth_scheme))
-                .authority("oauth")
-                .appendQueryParameter("fromDeleteRepo", String.valueOf(fromDeleteRepo))
-                .build();
+                .authority("oauth");
 
-        url = Uri.parse(url).buildUpon().appendQueryParameter("redirect_uri", callbackUri.toString()).build().toString();
+        if (fromDeleteRepo) {
+            callbackBuilder.appendQueryParameter("fromDeleteRepo", String.valueOf(true));
+        }
+
+        if (!hostname.equals(GITHUB_COM)) {
+            callbackBuilder.appendQueryParameter(FROM_ENTERPRISE_HOSTNAME, hostname);
+        }
+
+        url = Uri.parse(url).buildUpon().appendQueryParameter("redirect_uri", callbackBuilder.build().toString()).build().toString();
 
         final List<ResolveInfo> browserList = getBrowserList();
 
@@ -308,7 +344,8 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
                         if (ownedSkus.size() == 0) {
                             showDialogBuyMultiAccount();
                         } else {
-                            openExternalLogin(new GitHub());
+                            // TODO Change
+                            openExternalLogin(GITHUB_COM);
                         }
                     }
                 }
@@ -340,7 +377,8 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
                     String sku = jo.getString("productId");
                     String developerPayload = jo.getString("developerPayload");
                     if (developerPayload.equals(purchaseId) && SKU_MULTI_ACCOUNT.equals(sku)) {
-                        openExternalLogin(new GitHub());
+                        // TODO Change
+                        openExternalLogin(GITHUB_COM);
                     }
                 } catch (JSONException e) {
 
@@ -421,7 +459,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
 
     private void addAccount(User user) {
         Account account = new Account(user.login, getString(R.string.account_type));
-        Bundle userData = AccountsHelper.buildBundle(user.name, user.email, user.avatar_url, scope);
+        Bundle userData = AccountsHelper.buildBundle(user.name, user.email, user.avatar_url, scope, currentHostname);
         userData.putString(AccountManager.KEY_AUTHTOKEN, accessToken);
 
         AccountManager accountManager = AccountManager.get(this);

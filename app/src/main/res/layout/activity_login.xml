@@ -19,6 +19,17 @@
         android:text="@string/add_account_github"
         android:textSize="@dimen/textSizeMedium" />
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/enterpriseUrlHost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enterprise_url" />
+    </android.support.design.widget.TextInputLayout>
+
     <Button
         android:id="@+id/login_enterprise"
         android:layout_width="match_parent"

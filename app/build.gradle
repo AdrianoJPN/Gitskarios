@@ -41,11 +41,18 @@ android {
             buildConfigField "String", "CLIENT_SECRET", "\"" + getGHSecret(false) + "\""
             buildConfigField "String", "CLIENT_CALLBACK", "\"" + getGHCallback(false) + "\""
         }
-        release {
-            minifyEnabled false
+        enterprise {
+            debuggable true
+            applicationIdSuffix ".enterprise_test"
+            buildConfigField "String", "CLIENT_ID", "\"" + getGHId(false) + "\""
+            buildConfigField "String", "CLIENT_SECRET", "\"" + getGHSecret(false) + "\""
+            buildConfigField "String", "CLIENT_CALLBACK", "\"" + getGHCallback(false) + "\""
             if (signingConfigs.playStore != null) {
                 signingConfig signingConfigs.playStore
             }
+        }
+        release {
+            minifyEnabled false
             buildConfigField "String", "CLIENT_ID", "\"" + getGHId(true) + "\""
             buildConfigField "String", "CLIENT_SECRET", "\"" + getGHSecret(true) + "\""
             buildConfigField "String", "CLIENT_CALLBACK", "\"" + getGHCallback(true) + "\""
@@ -113,6 +120,7 @@ assembleRelease.doLast {
 
 dependencies {
     debugCompile project(path: ':sdks:GithubAndroidSdk', configuration: 'debug')
+    enterpriseCompile project(path: ':sdks:GithubAndroidSdk', configuration: 'debug')
     releaseCompile project(path: ':sdks:GithubAndroidSdk', configuration: 'release')
     // Submodules
 
