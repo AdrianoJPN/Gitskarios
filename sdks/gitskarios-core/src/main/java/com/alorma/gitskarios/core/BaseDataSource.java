@@ -8,7 +8,7 @@ import retrofit.client.Response;
 /**
  * Created by a557114 on 08/09/2015.
  */
-public abstract class BaseDataSource<T extends BaseClient<K>, K, Z> implements BaseClient.OnResultCallback<K> {
+public abstract class BaseDataSource<K, Z> implements BaseClient.OnResultCallback<K> {
 
     private Callback<Z> callback;
 
@@ -16,13 +16,13 @@ public abstract class BaseDataSource<T extends BaseClient<K>, K, Z> implements B
 
     }
 
-    public abstract T getApiClient();
+    public abstract BaseClient<K> getApiClient();
 
     public abstract BaseMapper<K, Z> getMapper();
 
     public void executeAsync(Callback<Z> callback) {
         this.callback = callback;
-        T apiClient = getApiClient();
+        BaseClient<K> apiClient = getApiClient();
         if (apiClient != null) {
             apiClient.setOnResultCallback(this);
             apiClient.execute();

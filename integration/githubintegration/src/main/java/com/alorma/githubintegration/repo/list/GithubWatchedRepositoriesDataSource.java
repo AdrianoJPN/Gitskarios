@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.services.client.GithubClient;
-import com.alorma.github.sdk.services.repos.StarredReposClient;
 import com.alorma.github.sdk.services.repos.WatchedReposClient;
 import com.alorma.githubintegration.mapper.repo.list.ListRepositoryMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
@@ -14,11 +13,8 @@ import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 
 import java.util.List;
 
-/**
- * Created by a557114 on 08/09/2015.
- */
 public class GithubWatchedRepositoriesDataSource
-        extends BaseDataSource<GithubClient<List<Repo>>, List<Repo>, List<GitskariosRepository>>
+        extends BaseDataSource<List<Repo>, List<GitskariosRepository>>
         implements Paginated {
 
     private Context context;

@@ -3,17 +3,13 @@ package com.alorma.data.user;
 import android.content.Context;
 
 import com.alorma.github.sdk.bean.dto.response.User;
-import com.alorma.github.sdk.services.client.GithubClient;
 import com.alorma.githubintegration.user.GithubAuthUserDataSource;
 import com.alorma.githubintegration.user.GithubUserDataSource;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.GitskariosFactory;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 
-/**
- * Created by a557114 on 08/09/2015.
- */
-public class GitskariosUserClient implements GitskariosFactory<GithubClient<User>, User, GitskariosUser> {
+public class GitskariosUserClient implements GitskariosFactory<User, GitskariosUser> {
 
     private Context context;
     private String login;
@@ -27,7 +23,7 @@ public class GitskariosUserClient implements GitskariosFactory<GithubClient<User
     }
 
     @Override
-    public BaseDataSource<GithubClient<User>, User, GitskariosUser> create() {
+    public BaseDataSource<User, GitskariosUser> create() {
         if (login != null) {
             return new GithubUserDataSource(context, login);
         } else {

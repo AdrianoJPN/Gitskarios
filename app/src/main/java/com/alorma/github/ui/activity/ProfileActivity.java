@@ -21,13 +21,6 @@ import android.widget.ImageView;
 
 import com.alorma.data.user.GitskariosUserClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.client.GithubClient;
-import com.alorma.githubintegration.mapper.user.UserMapper;
-import com.alorma.gitskarios.core.BaseDataSource;
-import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
-import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;
-import com.alorma.gitskarios.core.client.BaseClient;
-import com.alorma.gitskarios.core.client.StoreCredentials;
 import com.alorma.github.bean.ProfileItem;
 import com.alorma.github.sdk.bean.dto.response.Organization;
 import com.alorma.github.sdk.bean.dto.response.User;
@@ -40,6 +33,12 @@ import com.alorma.github.ui.activity.base.BackActivity;
 import com.alorma.github.ui.activity.gists.GistsMainActivity;
 import com.alorma.github.ui.adapter.ProfileItemsAdapter;
 import com.alorma.github.utils.TimeUtils;
+import com.alorma.githubintegration.mapper.user.UserMapper;
+import com.alorma.gitskarios.core.BaseDataSource;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;
+import com.alorma.gitskarios.core.client.BaseClient;
+import com.alorma.gitskarios.core.client.StoreCredentials;
 import com.mikepenz.octicons_typeface_library.Octicons;
 import com.musenkishi.atelier.Atelier;
 import com.musenkishi.atelier.ColorType;
@@ -53,9 +52,6 @@ import java.util.List;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by Bernat on 15/07/2014.
- */
 public class ProfileActivity extends BackActivity implements OnCheckFollowingUser, BaseDataSource.Callback<GitskariosUser> {
 
     private static final String USER = "USER";
@@ -112,7 +108,7 @@ public class ProfileActivity extends BackActivity implements OnCheckFollowingUse
     @Override
     protected void getContent() {
         if (profileItemsAdapter == null || profileItemsAdapter.getItemCount() == 0) {
-            BaseDataSource<GithubClient<User>, User, GitskariosUser> requestClient = null;
+            BaseDataSource<User, GitskariosUser> requestClient;
             user = null;
             if (getIntent().getExtras() != null) {
                 if (getIntent().getExtras().containsKey(USER)) {

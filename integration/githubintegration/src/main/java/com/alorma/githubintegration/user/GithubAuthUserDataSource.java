@@ -10,10 +10,7 @@ import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 
-/**
- * Created by a557114 on 08/09/2015.
- */
-public class GithubAuthUserDataSource extends BaseDataSource<GithubClient<User>, User, GitskariosUser> {
+public class GithubAuthUserDataSource extends BaseDataSource<User, GitskariosUser> {
     private final Context context;
 
     public GithubAuthUserDataSource(Context context) {

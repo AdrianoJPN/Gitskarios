@@ -13,11 +13,8 @@ import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 
 import java.util.List;
 
-/**
- * Created by a557114 on 08/09/2015.
- */
 public class GithubFollowersUsersDataSource
-        extends BaseDataSource<GithubClient<List<User>>, List<User>, List<GitskariosUser>>
+        extends BaseDataSource<List<User>, List<GitskariosUser>>
         implements Paginated {
 
     private Context context;

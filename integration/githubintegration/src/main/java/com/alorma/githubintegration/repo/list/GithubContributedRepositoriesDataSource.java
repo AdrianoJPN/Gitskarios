@@ -5,7 +5,6 @@ import android.content.Context;
 import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.services.client.GithubClient;
 import com.alorma.github.sdk.services.repos.MemberReposClient;
-import com.alorma.github.sdk.services.repos.UserReposFromOrganizationClient;
 import com.alorma.githubintegration.mapper.repo.list.ListRepositoryMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
@@ -18,7 +17,7 @@ import java.util.List;
  * Created by a557114 on 08/09/2015.
  */
 public class GithubContributedRepositoriesDataSource
-        extends BaseDataSource<GithubClient<List<Repo>>, List<Repo>, List<GitskariosRepository>>
+        extends BaseDataSource<List<Repo>, List<GitskariosRepository>>
         implements Paginated {
 
     private Context context;

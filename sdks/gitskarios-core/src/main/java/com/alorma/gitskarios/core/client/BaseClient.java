@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.alorma.gitskarios.core.ApiClient;
+import com.alorma.gitskarios.core.ApiConnection;
 
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
@@ -23,14 +23,14 @@ public abstract class BaseClient<ApiDto> implements Callback<ApiDto>, RequestInt
     protected final Context context;
     private OnResultCallback<ApiDto> onResultCallback;
     protected Handler handler;
-    private ApiClient client;
+    private ApiConnection client;
 
     public Uri last;
     public Uri next;
     public int lastPage;
     public int nextPage;
 
-    public BaseClient(Context context, ApiClient client) {
+    public BaseClient(Context context, ApiConnection client) {
         this.client = client;
         this.context = context.getApplicationContext();
         storeCredentials = new StoreCredentials(context);
@@ -154,7 +154,7 @@ public abstract class BaseClient<ApiDto> implements Callback<ApiDto>, RequestInt
         void onFail(RetrofitError error);
     }
 
-    public ApiClient getClient() {
+    public ApiConnection getClient() {
         return client;
     }
 

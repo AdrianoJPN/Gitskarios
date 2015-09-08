@@ -33,7 +33,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.alorma.github.BuildConfig;
 import com.alorma.github.Interceptor;
 import com.alorma.github.R;
-import com.alorma.gitskarios.core.ApiClient;
+import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.github.sdk.security.GithubDeveloperCredentials;
 import com.alorma.github.sdk.bean.dto.response.Token;
@@ -227,7 +227,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         return !BuildConfig.DEBUG && accounts != null && accounts.length > 0;
     }
 
-    private void openExternalLogin(ApiClient client) {
+    private void openExternalLogin(ApiConnection client) {
         if (GithubDeveloperCredentials.getInstance().getProvider().getApiClient() == null) {
             MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
             builder.title("API keys fail");

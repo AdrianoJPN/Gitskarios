@@ -10,6 +10,7 @@ import com.alorma.githubintegration.repo.list.GithubStarredRepositoriesDataSourc
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.GitskariosFactory;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
+import com.alorma.gitskarios.core.client.BaseClient;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * Created by a557114 on 08/09/2015.
  */
 public class GitskariosForkRepositoriesClient
-        implements GitskariosFactory<GithubClient<List<Repo>>, List<Repo>, List<GitskariosRepository>> {
+        implements GitskariosFactory<List<Repo>, List<GitskariosRepository>> {
 
     private final Context context;
     private final RepoInfo repoInfo;
@@ -34,7 +35,7 @@ public class GitskariosForkRepositoriesClient
     }
 
     @Override
-    public BaseDataSource<GithubClient<List<Repo>>, List<Repo>, List<GitskariosRepository>> create() {
+    public BaseDataSource<List<Repo>, List<GitskariosRepository>> create() {
         GithubForkRepositoriesDataSource githubUserRepositoriesDataSource = new GithubForkRepositoriesDataSource(context, repoInfo);
         if (page != 0) {
             githubUserRepositoriesDataSource.setPage(page);

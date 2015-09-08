@@ -13,11 +13,8 @@ import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 
 import java.util.List;
 
-/**
- * Created by a557114 on 08/09/2015.
- */
 public class GithubSearchRepositoriesDataSource
-        extends BaseDataSource<GithubClient<List<Repo>>, List<Repo>, List<GitskariosRepository>>
+        extends BaseDataSource<List<Repo>, List<GitskariosRepository>>
         implements Paginated {
 
     private Context context;
