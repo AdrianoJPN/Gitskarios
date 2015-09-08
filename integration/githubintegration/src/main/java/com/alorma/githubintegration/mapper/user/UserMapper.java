@@ -29,6 +29,8 @@ public class UserMapper implements BaseMapper<User, GitskariosUser> {
         gitskariosUser.avatar_url = user.avatar_url;
         gitskariosUser.company = user.company;
         gitskariosUser.location = user.location;
+        gitskariosUser.public_gists = user.public_gists;
+        gitskariosUser.public_repos = user.public_repos;
 
         return gitskariosUser;
     }
