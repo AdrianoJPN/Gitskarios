@@ -31,14 +31,12 @@ public class FollowingFragment extends BaseUsersListFragment {
 
     @Override
     protected void executeRequest() {
-        BaseDataSource<GithubClient<List<User>>, List<User>, List<GitskariosUser>> client = new GitskariosFollowingUsersClient(getActivity(), username).create();
-        client.executeAsync(this);
+        new GitskariosFollowingUsersClient(getActivity(), username).create().executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
-        BaseDataSource<GithubClient<List<User>>, List<User>, List<GitskariosUser>> client = new GitskariosFollowingUsersClient(getActivity(), username).create();
-        client.executeAsync(this);
+        new GitskariosFollowingUsersClient(getActivity(), username, page).create().executeAsync(this);
     }
 
     @Override

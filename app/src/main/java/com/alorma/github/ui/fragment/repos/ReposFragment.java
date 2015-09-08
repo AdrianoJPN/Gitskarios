@@ -2,10 +2,8 @@ package com.alorma.github.ui.fragment.repos;
 
 import android.os.Bundle;
 
+import com.alorma.data.repos.list.GitsakriosUserRepositoriesClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.repos.GithubReposClient;
-import com.alorma.github.sdk.services.repos.UserReposClient;
-import com.alorma.github.ui.callbacks.ListReposCallback;
 
 public class ReposFragment extends BaseReposListFragment {
 
@@ -37,17 +35,13 @@ public class ReposFragment extends BaseReposListFragment {
     protected void executeRequest() {
         super.executeRequest();
 
-        GithubReposClient client = new UserReposClient(getActivity(), username);
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitsakriosUserRepositoriesClient(getActivity(), username).create().executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        UserReposClient client = new UserReposClient(getActivity(), username, page);
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitsakriosUserRepositoriesClient(getActivity(), username, page).create().executeAsync(this);
     }
 
     @Override
