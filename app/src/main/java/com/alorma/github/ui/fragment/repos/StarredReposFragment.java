@@ -2,6 +2,7 @@ package com.alorma.github.ui.fragment.repos;
 
 import android.os.Bundle;
 
+import com.alorma.data.repos.list.GitsakriosStarredRepositoriesClient;
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.GithubReposClient;
 import com.alorma.github.sdk.services.repos.StarredReposClient;
@@ -29,25 +30,14 @@ public class StarredReposFragment extends BaseReposListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-        GithubReposClient client;
-
-        if (getArguments() != null) {
-            username = getArguments().getString(USERNAME);
-        }
-
-        client = new StarredReposClient(getActivity(), username);
-
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitsakriosStarredRepositoriesClient(getActivity(), username).create().executeAsync(this);
     }
 
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        StarredReposClient client = new StarredReposClient(getActivity(), username, page);
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitsakriosStarredRepositoriesClient(getActivity(), username, page).create().executeAsync(this);
     }
 
     @Override
@@ -57,6 +47,8 @@ public class StarredReposFragment extends BaseReposListFragment {
 
     @Override
     protected void loadArguments() {
-
+        if (getArguments() != null) {
+            username = getArguments().getString(USERNAME);
+        }
     }
 }
