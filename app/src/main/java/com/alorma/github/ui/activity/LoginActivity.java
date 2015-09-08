@@ -23,8 +23,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.StyleRes;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
@@ -33,17 +31,16 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.alorma.github.BuildConfig;
 import com.alorma.github.Interceptor;
 import com.alorma.github.R;
-import com.alorma.gitskarios.core.ApiConnection;
-import com.alorma.gitskarios.core.client.BaseClient;
-import com.alorma.github.sdk.security.GithubDeveloperCredentials;
 import com.alorma.github.sdk.bean.dto.response.Token;
 import com.alorma.github.sdk.bean.dto.response.User;
 import com.alorma.github.sdk.login.AccountsHelper;
 import com.alorma.github.sdk.security.GitHub;
+import com.alorma.gitskarios.core.GitskariosDeveloperCredentials;
 import com.alorma.github.sdk.services.login.RequestTokenClient;
 import com.alorma.github.sdk.services.user.GetAuthUserClient;
 import com.alorma.github.ui.ErrorHandler;
-import com.alorma.github.ui.adapter.AccountsAdapter;
+import com.alorma.gitskarios.core.ApiConnection;
+import com.alorma.gitskarios.core.client.BaseClient;
 import com.android.vending.billing.IInAppBillingService;
 
 import org.json.JSONException;
@@ -220,17 +217,18 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     }
 
     private void openExternalLogin(ApiConnection client) {
-        if (GithubDeveloperCredentials.getInstance().getProvider().getApiClient() == null) {
+        if (GitskariosDeveloperCredentials.getInstance().getProvider(client).getApiClient() == null) {
             MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
             builder.title("API keys fail");
-            builder.content("Credentials are not provided via GithubDeveloperCredentials.init().");
+            builder.content("Credentials are not provided via GitskariosDeveloperCredentials.init().");
             builder.positiveText("OK");
             builder.show();
             return;
         }
 
         String url = String.format("%s?client_id=%s&scope=" + SCOPES,
-                client.getApiOauthRequest(), GithubDeveloperCredentials.getInstance().getProvider().getApiClient());
+                client.getApiOauthRequest(),
+                GitskariosDeveloperCredentials.getInstance().getProvider(client).getApiClient());
 
         Uri callbackUri = Uri.EMPTY.buildUpon()
                 .scheme(getString(R.string.oauth_scheme))

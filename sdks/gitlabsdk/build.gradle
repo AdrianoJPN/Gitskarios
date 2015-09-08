@@ -19,6 +19,5 @@ android {
 }
 
 dependencies {
-    compile project(':integration:githubintegration')
-    compile project(':sdks:gitlabsdk')
+    compile project(':sdks:gitskarios-core')
 }

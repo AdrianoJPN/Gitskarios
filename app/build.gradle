@@ -37,18 +37,24 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            buildConfigField "String", "CLIENT_ID", "\"" + getGHId(false) + "\""
-            buildConfigField "String", "CLIENT_SECRET", "\"" + getGHSecret(false) + "\""
-            buildConfigField "String", "CLIENT_CALLBACK", "\"" + getGHCallback(false) + "\""
+            buildConfigField "String", "GH_CLIENT_ID", "\"" + getGHId(false) + "\""
+            buildConfigField "String", "GH_CLIENT_SECRET", "\"" + getGHSecret(false) + "\""
+            buildConfigField "String", "GH_CLIENT_CALLBACK", "\"" + getGHCallback(false) + "\""
+            buildConfigField "String", "GL_CLIENT_ID", "\"" + getGLId(false) + "\""
+            buildConfigField "String", "GL_CLIENT_SECRET", "\"" + getGLId(false) + "\""
+            buildConfigField "String", "GL_CLIENT_CALLBACK", "\"" + getGLId(false) + "\""
         }
         release {
             minifyEnabled false
             if (signingConfigs.playStore != null) {
                 signingConfig signingConfigs.playStore
             }
-            buildConfigField "String", "CLIENT_ID", "\"" + getGHId(true) + "\""
-            buildConfigField "String", "CLIENT_SECRET", "\"" + getGHSecret(true) + "\""
-            buildConfigField "String", "CLIENT_CALLBACK", "\"" + getGHCallback(true) + "\""
+            buildConfigField "String", "GH_CLIENT_ID", "\"" + getGHId(true) + "\""
+            buildConfigField "String", "GH_CLIENT_SECRET", "\"" + getGHSecret(true) + "\""
+            buildConfigField "String", "GH_CLIENT_CALLBACK", "\"" + getGHCallback(true) + "\""
+            buildConfigField "String", "GL_CLIENT_ID", "\"" + getGLId(true) + "\""
+            buildConfigField "String", "GL_CLIENT_SECRET", "\"" + getGLId(true) + "\""
+            buildConfigField "String", "GL_CLIENT_CALLBACK", "\"" + getGLId(true) + "\""
             ext.betaDistributionGroupAliases="gitskarios-alpha-testers"
         }
     }
@@ -103,6 +109,31 @@ def getGHCallback(pro) {
         return hasProperty('GH_PRO_CALLBACK') ? GH_PRO_CALLBACK : System.getenv('GH_PRO_CALLBACK')
     } else {
         return hasProperty('GH_DEV_CALLBACK') ? GH_DEV_CALLBACK : System.getenv('GH_DEV_CALLBACK')
+    }
+}
+
+
+def getGLId(pro) {
+    if (pro) {
+        return hasProperty('GL_PRO_ID') ? GL_PRO_ID : System.getenv('GL_PRO_ID')
+    } else {
+        return hasProperty('GL_DEV_ID') ? GL_DEV_ID : System.getenv('GL_DEV_ID')
+    }
+}
+
+def getGLSecret(pro) {
+    if (pro) {
+        return hasProperty('GL_PRO_SECRET') ? GL_PRO_SECRET : System.getenv('GL_PRO_SECRET')
+    } else {
+        return hasProperty('GL_DEV_SECRET') ? GL_DEV_SECRET : System.getenv('GL_DEV_SECRET')
+    }
+}
+
+def getGLCallback(pro) {
+    if (pro) {
+        return hasProperty('GL_PRO_CALLBACK') ? GL_PRO_CALLBACK : System.getenv('GL_PRO_CALLBACK')
+    } else {
+        return hasProperty('GL_DEV_CALLBACK') ? GL_DEV_CALLBACK : System.getenv('GL_DEV_CALLBACK')
     }
 }
 

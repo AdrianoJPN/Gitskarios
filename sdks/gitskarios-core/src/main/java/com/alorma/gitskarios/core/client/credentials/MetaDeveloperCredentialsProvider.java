@@ -9,7 +9,7 @@ import android.util.Log;
 /**
  * Created by Bernat on 07/07/2015.
  */
-public class MetaDeveloperCredentialsProvider implements DeveloperCredentialsProvider {
+public abstract class MetaDeveloperCredentialsProvider implements DeveloperCredentialsProvider {
 
     private String apiClient;
     private String apiSecret;
@@ -19,15 +19,21 @@ public class MetaDeveloperCredentialsProvider implements DeveloperCredentialsPro
         try {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            apiClient = bundle.getString("com.alorma.github.sdk.client");
-            apiSecret = bundle.getString("com.alorma.github.sdk.secret");
-            apiOauth = bundle.getString("com.alorma.github.sdk.oauth");
+            apiClient = bundle.getString(getApiClientKey());
+            apiSecret = bundle.getString(getApiSecretKey());
+            apiOauth = bundle.getString(getApiCallbackKey());
         } catch (PackageManager.NameNotFoundException e) {
             Log.e("GitHubSdk", "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {
             Log.e("GitHubSdk", "Failed to load meta-data, NullPointer: " + e.getMessage());
         }
     }
+
+    protected abstract String getApiClientKey();
+
+    protected abstract String getApiSecretKey();
+
+    protected abstract String getApiCallbackKey();
 
     @Override
     public String getApiClient() {
