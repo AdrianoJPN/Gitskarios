@@ -6,6 +6,7 @@ package com.alorma.gitskarios.core;
 public interface ApiConnection {
 
     String getApiOauthUrlEndpoint();
+    String getApiOauthRequest();
     String getApiEndpoint();
     String getType();
 

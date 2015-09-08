@@ -68,8 +68,6 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     private static final String SKU_MULTI_ACCOUNT = "com.alorma.github.multiaccount";
     private static final String SCOPES = "gist,user,notifications,repo,delete_repo";
 
-    public static String OAUTH_URL = "https://github.com/login/oauth/authorize";
-
     private SpotsDialog progressDialog;
     private String accessToken;
     private String scope;
@@ -109,12 +107,12 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        final View loginButton = findViewById(R.id.login);
+        final View loginButtonGithub = findViewById(R.id.login_github);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        loginButtonGithub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                login();
+                login(new GitHub());
             }
         });
 
@@ -130,19 +128,13 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         fromApp = getIntent().getBooleanExtra(ADDING_FROM_APP, false);
         fromDeleteRepo = getIntent().getBooleanExtra(FROM_DELETE, false);
 
-        toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        toolbar.setNavigationIcon(R.drawable.ic_ab_back_mtrl_am_alpha);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 closeLoginActivity(fromApp, fromDeleteRepo);
             }
         });
-
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        final AccountsAdapter adapter = new AccountsAdapter(this, accounts);
-        recyclerView.setAdapter(adapter);
 
         if (accounts != null) {
             for (Account account : accounts) {
@@ -153,7 +145,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         if (fromDeleteRepo) {
             openExternalLogin(new GitHub());
         } else if (fromLogin) {
-            loginButton.setEnabled(false);
+            loginButtonGithub.setEnabled(false);
             showProgressDialog(R.style.SpotDialog_Login);
             Uri uri = getIntent().getData();
             String code = uri.getQueryParameter("code");
@@ -180,7 +172,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
                 requestTokenClient.execute();
             }
         } else if (fromAccounts) {
-            login();
+            login(new GitHub());
         } else if (!fromApp && accounts != null && accounts.length > 0) {
             openMain();
         }
@@ -214,12 +206,12 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         }
     }
 
-    private void login() {
+    private void login(ApiConnection apiConnection) {
         if (multipleAccountFeatureRequired()) {
             SKUTask task = new SKUTask();
             task.execute(SKU_MULTI_ACCOUNT);
         } else {
-            openExternalLogin(new GitHub());
+            openExternalLogin(apiConnection);
         }
     }
 
@@ -238,7 +230,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         }
 
         String url = String.format("%s?client_id=%s&scope=" + SCOPES,
-                OAUTH_URL, GithubDeveloperCredentials.getInstance().getProvider().getApiClient());
+                client.getApiOauthRequest(), GithubDeveloperCredentials.getInstance().getProvider().getApiClient());
 
         Uri callbackUri = Uri.EMPTY.buildUpon()
                 .scheme(getString(R.string.oauth_scheme))
