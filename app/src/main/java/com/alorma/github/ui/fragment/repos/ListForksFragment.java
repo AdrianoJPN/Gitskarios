@@ -2,6 +2,7 @@ package com.alorma.github.ui.fragment.repos;
 
 import android.os.Bundle;
 
+import com.alorma.data.repos.list.GitskariosForkRepositoriesClient;
 import com.alorma.github.R;
 import com.alorma.github.sdk.bean.info.RepoInfo;
 import com.alorma.github.sdk.services.repo.GetForksClient;
@@ -29,27 +30,17 @@ public class ListForksFragment extends BaseReposListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-        GetForksClient client;
-
-        if (getArguments() != null) {
-            repoInfo = getArguments().getParcelable(REPO_INFO);
-        }
-
         if (repoInfo != null) {
-            client = new GetForksClient(getActivity(), repoInfo);
-            client.setSort(GetForksClient.STARGAZERS);
-            client.setOnResultCallback(new ListReposCallback(this));
-            client.execute();
+            new GitskariosForkRepositoriesClient(getActivity(), repoInfo).create().executeAsync(this);
         }
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        GetForksClient client = new GetForksClient(getActivity(), repoInfo, page);
-        client.setSort(GetForksClient.STARGAZERS);
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        if (repoInfo != null) {
+            new GitskariosForkRepositoriesClient(getActivity(), repoInfo, page).create().executeAsync(this);
+        }
     }
 
     @Override
@@ -60,7 +51,7 @@ public class ListForksFragment extends BaseReposListFragment {
     @Override
     protected void loadArguments() {
         if (getArguments() != null) {
-            repoInfo = getArguments().getParcelable(USERNAME);
+            repoInfo = getArguments().getParcelable(REPO_INFO);
         }
     }
 

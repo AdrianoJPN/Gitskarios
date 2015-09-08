@@ -1,5 +1,6 @@
 package com.alorma.github.ui.fragment.repos;
 
+import com.alorma.data.repos.list.GitskariosContributedRepositoriesClient;
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.MemberReposClient;
 import com.alorma.github.ui.callbacks.ListReposCallback;
@@ -7,10 +8,10 @@ import com.alorma.github.ui.callbacks.ListReposCallback;
 /**
  * Created by Bernat on 18/07/2015.
  */
-public class MembershipReposFragment extends BaseReposListFragment {
+public class ContributedReposFragment extends BaseReposListFragment {
 
-    public static MembershipReposFragment newInstance() {
-        return new MembershipReposFragment();
+    public static ContributedReposFragment newInstance() {
+        return new ContributedReposFragment();
     }
 
     @Override
@@ -21,17 +22,13 @@ public class MembershipReposFragment extends BaseReposListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-        MemberReposClient memberReposClient = new MemberReposClient(getActivity());
-        memberReposClient.setOnResultCallback(new ListReposCallback(this));
-        memberReposClient.execute();
+        new GitskariosContributedRepositoriesClient(getActivity()).create().executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        MemberReposClient memberReposClient = new MemberReposClient(getActivity(), page);
-        memberReposClient.setOnResultCallback(new ListReposCallback(this));
-        memberReposClient.execute();
+        new GitskariosContributedRepositoriesClient(getActivity(), page).create().executeAsync(this);
     }
 
     @Override

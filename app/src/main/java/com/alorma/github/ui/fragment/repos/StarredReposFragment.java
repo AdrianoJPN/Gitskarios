@@ -2,11 +2,8 @@ package com.alorma.github.ui.fragment.repos;
 
 import android.os.Bundle;
 
-import com.alorma.data.repos.list.GitsakriosStarredRepositoriesClient;
+import com.alorma.data.repos.list.GitskariosStarredRepositoriesClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.repos.GithubReposClient;
-import com.alorma.github.sdk.services.repos.StarredReposClient;
-import com.alorma.github.ui.callbacks.ListReposCallback;
 
 public class StarredReposFragment extends BaseReposListFragment {
 
@@ -30,14 +27,14 @@ public class StarredReposFragment extends BaseReposListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-        new GitsakriosStarredRepositoriesClient(getActivity(), username).create().executeAsync(this);
+        new GitskariosStarredRepositoriesClient(getActivity(), username).create().executeAsync(this);
     }
 
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        new GitsakriosStarredRepositoriesClient(getActivity(), username, page).create().executeAsync(this);
+        new GitskariosStarredRepositoriesClient(getActivity(), username, page).create().executeAsync(this);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.alorma.github.ui.fragment.repos;
 
+import com.alorma.data.repos.list.GitskariosOrganizationsRepositoriesClient;
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.UserReposFromOrganizationClient;
 import com.alorma.github.ui.callbacks.ListReposCallback;
@@ -18,18 +19,13 @@ public class ReposFragmentFromOrgs extends BaseReposListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-
-        UserReposFromOrganizationClient client = new UserReposFromOrganizationClient(getActivity());
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitskariosOrganizationsRepositoriesClient(getActivity()).create().executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        UserReposFromOrganizationClient client = new UserReposFromOrganizationClient(getActivity(), page);
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitskariosOrganizationsRepositoriesClient(getActivity(), page).create().executeAsync(this);
     }
 
     @Override

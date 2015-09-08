@@ -81,7 +81,7 @@ public class GeneralReposFragment extends BaseFragment {
                 case 2:
                     return WatchedReposFragment.newInstance();
                 case 3:
-                    return MembershipReposFragment.newInstance();
+                    return ContributedReposFragment.newInstance();
                 case 4:
                     return ReposFragmentFromOrgs.newInstance();
             }

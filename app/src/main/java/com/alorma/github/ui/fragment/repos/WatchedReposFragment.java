@@ -2,6 +2,7 @@ package com.alorma.github.ui.fragment.repos;
 
 import android.os.Bundle;
 
+import com.alorma.data.repos.list.GitskariosWatchedRepositoriesClient;
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.WatchedReposClient;
 import com.alorma.github.ui.callbacks.ListReposCallback;
@@ -28,24 +29,13 @@ public class WatchedReposFragment extends BaseReposListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-        WatchedReposClient client;
-
-        if (getArguments() != null) {
-            username = getArguments().getString(USERNAME);
-        }
-
-        client = new WatchedReposClient(getActivity(), username);
-
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitskariosWatchedRepositoriesClient(getActivity(), username).create().executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        WatchedReposClient client = new WatchedReposClient(getActivity(), username, page);
-        client.setOnResultCallback(new ListReposCallback(this));
-        client.execute();
+        new GitskariosWatchedRepositoriesClient(getActivity(), username, page).create().executeAsync(this);
     }
 
     @Override
@@ -55,6 +45,8 @@ public class WatchedReposFragment extends BaseReposListFragment {
 
     @Override
     protected void loadArguments() {
-
+        if (getArguments() != null) {
+            username = getArguments().getString(USERNAME);
+        }
     }
 }
