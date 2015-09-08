@@ -7,6 +7,7 @@ import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.utils.GitskariosSettings;
 import com.alorma.github.ui.adapter.repos.ReposAdapter;
 import com.alorma.github.ui.fragment.base.PaginatedListFragment;
+import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
 import java.util.Collection;
@@ -17,12 +18,12 @@ import retrofit.RetrofitError;
 /**
  * Created by Bernat on 17/07/2014.
  */
-public abstract class BaseReposListFragment extends PaginatedListFragment<List<Repo>, ReposAdapter> implements SharedPreferences.OnSharedPreferenceChangeListener {
+public abstract class BaseReposListFragment extends PaginatedListFragment<List<GitskariosRepository>, ReposAdapter> implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private GitskariosSettings settings;
 
     @Override
-    protected void onResponse(List<Repo> repos, boolean refreshing) {
+    protected void onResponse(List<GitskariosRepository> repos, boolean refreshing) {
         if (repos.size() > 0) {
             hideEmpty();
             if (getAdapter() != null) {
@@ -45,7 +46,7 @@ public abstract class BaseReposListFragment extends PaginatedListFragment<List<R
         }
     }
 
-    protected void setUpList(Collection<Repo> repos) {
+    protected void setUpList(Collection<GitskariosRepository> repos) {
         settings = new GitskariosSettings(getActivity());
         settings.registerListener(this);
 

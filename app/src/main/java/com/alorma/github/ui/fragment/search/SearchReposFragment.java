@@ -8,6 +8,7 @@ import android.view.View;
 import com.alorma.github.R;
 import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.services.search.RepoSearchClient;
+import com.alorma.github.ui.callbacks.ListReposCallback;
 import com.alorma.github.ui.fragment.repos.BaseReposListFragment;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
@@ -64,7 +65,7 @@ public class SearchReposFragment extends BaseReposListFragment {
             if (query != null) {
                 super.executeRequest();
                 RepoSearchClient client = new RepoSearchClient(getActivity(), query);
-                client.setOnResultCallback(this);
+                client.setOnResultCallback(new ListReposCallback(this));
                 client.execute();
                 query = null;
                 if (getAdapter() != null) {
@@ -80,7 +81,7 @@ public class SearchReposFragment extends BaseReposListFragment {
             if (query != null) {
                 super.executePaginatedRequest(page);
                 RepoSearchClient client = new RepoSearchClient(getActivity(), query, page);
-                client.setOnResultCallback(this);
+                client.setOnResultCallback(new ListReposCallback(this));
                 client.execute();
                 query = null;
                 if (getAdapter() != null) {

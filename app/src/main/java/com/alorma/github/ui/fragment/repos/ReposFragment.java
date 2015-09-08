@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.GithubReposClient;
 import com.alorma.github.sdk.services.repos.UserReposClient;
+import com.alorma.github.ui.callbacks.ListReposCallback;
 
 public class ReposFragment extends BaseReposListFragment {
 
@@ -37,7 +38,7 @@ public class ReposFragment extends BaseReposListFragment {
         super.executeRequest();
 
         GithubReposClient client = new UserReposClient(getActivity(), username);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListReposCallback(this));
         client.execute();
     }
 
@@ -45,7 +46,7 @@ public class ReposFragment extends BaseReposListFragment {
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
         UserReposClient client = new UserReposClient(getActivity(), username, page);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListReposCallback(this));
         client.execute();
     }
 

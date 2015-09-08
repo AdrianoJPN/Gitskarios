@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import com.alorma.data.user.GitskariosUserClient;
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.client.GithubClient;
-import com.alorma.githubintegration.mapper.UserMapper;
+import com.alorma.githubintegration.mapper.user.UserMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;

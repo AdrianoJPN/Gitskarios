@@ -1,4 +1,4 @@
-package com.alorma.githubintegration.mapper;
+package com.alorma.githubintegration.mapper.user;
 
 import android.support.annotation.NonNull;
 
@@ -11,7 +11,7 @@ import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;
 /**
  * Created by a557114 on 08/09/2015.
  */
-public class UserMapper extends BaseMapper<User, GitskariosUser> {
+public class UserMapper implements BaseMapper<User, GitskariosUser> {
 
     @NonNull
     @Override

@@ -2,6 +2,7 @@ package com.alorma.github.ui.fragment.repos;
 
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.UserReposFromOrganizationClient;
+import com.alorma.github.ui.callbacks.ListReposCallback;
 
 public class ReposFragmentFromOrgs extends BaseReposListFragment {
 
@@ -19,7 +20,7 @@ public class ReposFragmentFromOrgs extends BaseReposListFragment {
         super.executeRequest();
 
         UserReposFromOrganizationClient client = new UserReposFromOrganizationClient(getActivity());
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListReposCallback(this));
         client.execute();
     }
 
@@ -27,7 +28,7 @@ public class ReposFragmentFromOrgs extends BaseReposListFragment {
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
         UserReposFromOrganizationClient client = new UserReposFromOrganizationClient(getActivity(), page);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListReposCallback(this));
         client.execute();
     }
 

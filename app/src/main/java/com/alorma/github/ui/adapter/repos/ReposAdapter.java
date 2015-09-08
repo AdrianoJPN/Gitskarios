@@ -12,10 +12,11 @@ import com.alorma.github.UrlsManager;
 import com.alorma.github.emoji.EmojiBitmapLoader;
 import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.ui.adapter.base.RecyclerArrayAdapter;
+import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
-public class ReposAdapter extends RecyclerArrayAdapter<Repo, ReposAdapter.ViewHolder> {
+public class ReposAdapter extends RecyclerArrayAdapter<GitskariosRepository, ReposAdapter.ViewHolder> {
 
     private boolean showOwnerName;
 
@@ -29,8 +30,8 @@ public class ReposAdapter extends RecyclerArrayAdapter<Repo, ReposAdapter.ViewHo
     }
 
     @Override
-    protected void onBindViewHolder(ViewHolder holder, Repo repo) {
-        holder.textTitle.setText(showOwnerName ? repo.owner.login : repo.name);
+    protected void onBindViewHolder(ViewHolder holder, GitskariosRepository repo) {
+        holder.textTitle.setText(showOwnerName ? repo.owner : repo.name);
         //new EmojiBitmapLoader().parseTextView(holder.textTitle);
 
         String starText = holder.itemView.getResources().getString(R.string.star_icon_text, repo.stargazers_count);
@@ -79,7 +80,7 @@ public class ReposAdapter extends RecyclerArrayAdapter<Repo, ReposAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Repo item = getItem(getAdapterPosition());
+                    GitskariosRepository item = getItem(getAdapterPosition());
                     if (item != null) {
                         v.getContext().startActivity(new UrlsManager(v.getContext()).manageRepos(Uri.parse(item.html_url)));
                     }

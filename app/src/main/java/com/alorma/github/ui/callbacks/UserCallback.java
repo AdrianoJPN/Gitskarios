@@ -1,7 +1,7 @@
 package com.alorma.github.ui.callbacks;
 
 import com.alorma.github.sdk.bean.dto.response.User;
-import com.alorma.githubintegration.mapper.UserMapper;
+import com.alorma.githubintegration.mapper.user.UserMapper;
 import com.alorma.gitskarios.core.BaseMapper;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.alorma.gitskarios.core.client.BaseClient;

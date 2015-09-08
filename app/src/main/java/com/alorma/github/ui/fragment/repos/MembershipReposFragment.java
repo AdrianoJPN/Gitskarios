@@ -2,6 +2,7 @@ package com.alorma.github.ui.fragment.repos;
 
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.MemberReposClient;
+import com.alorma.github.ui.callbacks.ListReposCallback;
 
 /**
  * Created by Bernat on 18/07/2015.
@@ -21,7 +22,7 @@ public class MembershipReposFragment extends BaseReposListFragment {
     protected void executeRequest() {
         super.executeRequest();
         MemberReposClient memberReposClient = new MemberReposClient(getActivity());
-        memberReposClient.setOnResultCallback(this);
+        memberReposClient.setOnResultCallback(new ListReposCallback(this));
         memberReposClient.execute();
     }
 
@@ -29,7 +30,7 @@ public class MembershipReposFragment extends BaseReposListFragment {
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
         MemberReposClient memberReposClient = new MemberReposClient(getActivity(), page);
-        memberReposClient.setOnResultCallback(this);
+        memberReposClient.setOnResultCallback(new ListReposCallback(this));
         memberReposClient.execute();
     }
 

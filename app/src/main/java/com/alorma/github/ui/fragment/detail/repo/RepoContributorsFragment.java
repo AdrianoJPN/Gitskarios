@@ -13,8 +13,7 @@ import com.alorma.github.sdk.services.repo.GetRepoContributorsClient;
 import com.alorma.github.ui.adapter.users.UsersAdapter;
 import com.alorma.github.ui.fragment.base.PaginatedListFragment;
 import com.alorma.github.ui.listeners.TitleProvider;
-import com.alorma.githubintegration.mapper.ListUserMapper;
-import com.alorma.githubintegration.mapper.UserMapper;
+import com.alorma.githubintegration.mapper.user.list.ListUserMapper;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
 import java.util.ArrayList;

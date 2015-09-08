@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.repos.GithubReposClient;
 import com.alorma.github.sdk.services.repos.StarredReposClient;
+import com.alorma.github.ui.callbacks.ListReposCallback;
 
 public class StarredReposFragment extends BaseReposListFragment {
 
@@ -36,7 +37,7 @@ public class StarredReposFragment extends BaseReposListFragment {
 
         client = new StarredReposClient(getActivity(), username);
 
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListReposCallback(this));
         client.execute();
     }
 
@@ -45,7 +46,7 @@ public class StarredReposFragment extends BaseReposListFragment {
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
         StarredReposClient client = new StarredReposClient(getActivity(), username, page);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListReposCallback(this));
         client.execute();
     }
 

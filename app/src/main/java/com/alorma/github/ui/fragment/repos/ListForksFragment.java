@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.alorma.github.R;
 import com.alorma.github.sdk.bean.info.RepoInfo;
 import com.alorma.github.sdk.services.repo.GetForksClient;
+import com.alorma.github.ui.callbacks.ListReposCallback;
 
 /**
  * Created by a557114 on 05/09/2015.
@@ -37,7 +38,7 @@ public class ListForksFragment extends BaseReposListFragment {
         if (repoInfo != null) {
             client = new GetForksClient(getActivity(), repoInfo);
             client.setSort(GetForksClient.STARGAZERS);
-            client.setOnResultCallback(this);
+            client.setOnResultCallback(new ListReposCallback(this));
             client.execute();
         }
     }
@@ -47,7 +48,7 @@ public class ListForksFragment extends BaseReposListFragment {
         super.executePaginatedRequest(page);
         GetForksClient client = new GetForksClient(getActivity(), repoInfo, page);
         client.setSort(GetForksClient.STARGAZERS);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListReposCallback(this));
         client.execute();
     }
 
