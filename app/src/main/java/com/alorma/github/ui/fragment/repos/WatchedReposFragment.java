@@ -4,8 +4,6 @@ import android.os.Bundle;
 
 import com.alorma.data.repos.list.GitskariosWatchedRepositoriesClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.repos.WatchedReposClient;
-import com.alorma.github.ui.callbacks.ListReposCallback;
 
 public class WatchedReposFragment extends BaseReposListFragment {
 

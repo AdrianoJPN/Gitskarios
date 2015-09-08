@@ -5,12 +5,7 @@ import android.os.Bundle;
 import com.alorma.data.repos.list.GitskariosForkRepositoriesClient;
 import com.alorma.github.R;
 import com.alorma.github.sdk.bean.info.RepoInfo;
-import com.alorma.github.sdk.services.repo.GetForksClient;
-import com.alorma.github.ui.callbacks.ListReposCallback;
 
-/**
- * Created by a557114 on 05/09/2015.
- */
 public class ListForksFragment extends BaseReposListFragment {
 
     private static final String REPO_INFO = "REPO_INFO";

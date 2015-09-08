@@ -2,8 +2,6 @@ package com.alorma.github.ui.fragment.repos;
 
 import com.alorma.data.repos.list.GitskariosOrganizationsRepositoriesClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.repos.UserReposFromOrganizationClient;
-import com.alorma.github.ui.callbacks.ListReposCallback;
 
 public class ReposFragmentFromOrgs extends BaseReposListFragment {
 

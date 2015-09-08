@@ -5,10 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
+import com.alorma.data.repos.list.GitskariosSearchRepositoriesClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.bean.dto.response.Repo;
-import com.alorma.github.sdk.services.search.RepoSearchClient;
-import com.alorma.github.ui.callbacks.ListReposCallback;
 import com.alorma.github.ui.fragment.repos.BaseReposListFragment;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
@@ -18,7 +16,6 @@ import com.mikepenz.octicons_typeface_library.Octicons;
 public class SearchReposFragment extends BaseReposListFragment {
 
     private String query = null;
-    private OnSearchReposListener onSearchReposListener;
 
     public static SearchReposFragment newInstance(String query) {
         Bundle args = new Bundle();
@@ -64,9 +61,7 @@ public class SearchReposFragment extends BaseReposListFragment {
         if (getActivity() != null) {
             if (query != null) {
                 super.executeRequest();
-                RepoSearchClient client = new RepoSearchClient(getActivity(), query);
-                client.setOnResultCallback(new ListReposCallback(this));
-                client.execute();
+                new GitskariosSearchRepositoriesClient(getActivity(), query).create().executeAsync(this);
                 query = null;
                 if (getAdapter() != null) {
                     getAdapter().clear();
@@ -80,9 +75,7 @@ public class SearchReposFragment extends BaseReposListFragment {
         if (getActivity() != null) {
             if (query != null) {
                 super.executePaginatedRequest(page);
-                RepoSearchClient client = new RepoSearchClient(getActivity(), query, page);
-                client.setOnResultCallback(new ListReposCallback(this));
-                client.execute();
+                new GitskariosSearchRepositoriesClient(getActivity(), query, page).create().executeAsync(this);
                 query = null;
                 if (getAdapter() != null) {
                     getAdapter().clear();
@@ -94,24 +87,5 @@ public class SearchReposFragment extends BaseReposListFragment {
     public void setQuery(String query) {
         this.query = query;
         executeRequest();
-    }
-
-/*    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        if (reposAdapter != null && reposAdapter.getItemCount() >= position) {
-            Repo item = reposAdapter.getItem(position);
-            if (onSearchReposListener != null) {
-                onSearchReposListener.onRepoItemSelected(item);
-            }
-        }
-    }*/
-
-    public void setOnSearchReposListener(OnSearchReposListener onSearchReposListener) {
-        this.onSearchReposListener = onSearchReposListener;
-    }
-
-    public interface OnSearchReposListener {
-        void onRepoItemSelected(Repo repo);
     }
 }

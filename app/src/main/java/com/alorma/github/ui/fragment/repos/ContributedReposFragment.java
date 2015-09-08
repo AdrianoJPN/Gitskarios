@@ -2,12 +2,7 @@ package com.alorma.github.ui.fragment.repos;
 
 import com.alorma.data.repos.list.GitskariosContributedRepositoriesClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.repos.MemberReposClient;
-import com.alorma.github.ui.callbacks.ListReposCallback;
 
-/**
- * Created by Bernat on 18/07/2015.
- */
 public class ContributedReposFragment extends BaseReposListFragment {
 
     public static ContributedReposFragment newInstance() {
