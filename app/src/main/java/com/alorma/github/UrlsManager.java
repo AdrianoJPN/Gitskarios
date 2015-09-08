@@ -22,6 +22,7 @@ import com.alorma.github.ui.activity.ProfileActivity;
 import com.alorma.github.ui.activity.PullRequestDetailActivity;
 import com.alorma.github.ui.activity.ReleaseDetailActivity;
 import com.alorma.github.ui.activity.RepoDetailActivity;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
@@ -212,7 +213,7 @@ public class UrlsManager {
     }
 
     public Intent manageUsers(Uri uri) {
-        User user = new User();
+        GitskariosUser user = new GitskariosUser();
         user.login = uri.getLastPathSegment();
         return ProfileActivity.createLauncherIntent(context, user);
     }

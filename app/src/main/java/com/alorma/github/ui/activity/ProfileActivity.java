@@ -19,7 +19,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.alorma.data.GitskariosUserClient;
 import com.alorma.github.R;
+import com.alorma.github.sdk.services.client.GithubClient;
+import com.alorma.githubintegration.mapper.GithubUserDataSource;
+import com.alorma.githubintegration.mapper.UserMapper;
+import com.alorma.gitskarios.core.BaseDataSource;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;
 import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.gitskarios.core.client.StoreCredentials;
 import com.alorma.github.bean.ProfileItem;
@@ -54,16 +61,14 @@ import retrofit.client.Response;
 /**
  * Created by Bernat on 15/07/2014.
  */
-public class ProfileActivity extends BackActivity implements BaseClient.OnResultCallback<User>,
-//        PaletteUtils.PaletteUtilsListener,
-        OnCheckFollowingUser {
+public class ProfileActivity extends BackActivity implements OnCheckFollowingUser, BaseDataSource.Callback<GitskariosUser> {
 
     private static final String USER = "USER";
     private static final String AUTHENTICATED_USER = "AUTHENTICATED_USER";
 
     private ImageView image;
 
-    private User user;
+    private GitskariosUser user;
     private boolean followingUser = false;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ProfileItemsAdapter profileItemsAdapter;
@@ -75,7 +80,12 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
         return intent;
     }
 
+    @Deprecated
     public static Intent createLauncherIntent(Context context, User user) {
+        return createLauncherIntent(context, new UserMapper().toCore(user));
+    }
+
+    public static Intent createLauncherIntent(Context context, GitskariosUser user) {
         Bundle extras = new Bundle();
         if (user != null) {
             extras.putParcelable(USER, user);
@@ -107,7 +117,7 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
     @Override
     protected void getContent() {
         if (profileItemsAdapter == null || profileItemsAdapter.getItemCount() == 0) {
-            GithubUsersClient<User> requestClient;
+            BaseDataSource<GithubClient<User>, User, GitskariosUser> requestClient = null;
             user = null;
             if (getIntent().getExtras() != null) {
                 if (getIntent().getExtras().containsKey(USER)) {
@@ -119,22 +129,24 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
 
             if (user != null) {
                 if (user.login.equalsIgnoreCase(settings.getUserName())) {
-                    requestClient = new GetAuthUserClient(this);
+                    requestClient = new GitskariosUserClient(this).create();
                     collapsingToolbarLayout.setTitle(settings.getUserName());
                 } else {
-                    requestClient = new RequestUserClient(this, user.login);
+                    requestClient = new GitskariosUserClient(this, user.login).create();
+
                     collapsingToolbarLayout.setTitle(user.login);
                 }
             } else {
-                requestClient = new GetAuthUserClient(this);
+                requestClient = new GitskariosUserClient(this).create();
             }
 
             invalidateOptionsMenu();
 
             showProgressDialog(R.style.SpotDialog_LoadingUser);
 
-            requestClient.setOnResultCallback(this);
-            requestClient.execute();
+            if (requestClient != null) {
+                requestClient.executeAsync(this);
+            }
         }
     }
 
@@ -182,7 +194,7 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
     }
 
     @Override
-    public void onResponseOk(final User user, Response r) {
+    public void onResponse(final GitskariosUser user, Response r) {
         this.user = user;
         collapsingToolbarLayout.setTitle(user.login);
 
@@ -202,7 +214,6 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
 
         fillCardGithubData(user);
 
-        fillCardPlan(user);
 
         if (getSupportActionBar() != null) {
 
@@ -237,31 +248,9 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
 
                 }
             });
-//            new PaletteUtils().loadImageAndPalette(user.avatar_url, this);
         }
     }
 
-//    @Override
-//    public void onImageLoaded(Bitmap loadedImage, Palette palette) {
-//
-//        Drawable drawable = new BitmapDrawable(getResources(), loadedImage);
-//
-//        image.setImageDrawable(drawable);
-//
-//        if (palette.getSwatches().size() > 0) {
-//            Palette.Swatch swatch = palette.getSwatches().get(0);
-//            applyColors(swatch.getRgb(), swatch.getBodyTextColor());
-//        } else {
-//            applyColors(getResources().getColor(R.color.primary), Color.WHITE);
-//        }
-//
-//        fillCardBio(user);
-//
-//        fillCardGithubData(user);
-//
-//        fillCardPlan(user);
-//
-//    }
 
     private void applyColors(int rgb) {
         collapsingToolbarLayout.setContentScrimColor(rgb);
@@ -282,7 +271,7 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
         }
     }
 
-    private void fillCardBio(User user) {
+    private void fillCardBio(GitskariosUser user) {
         if (!TextUtils.isEmpty(user.company)) {
             Intent intent = new Intent(Intent.ACTION_SEARCH);
             intent.putExtra(SearchManager.QUERY, user.company);
@@ -309,7 +298,7 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
         }
     }
 
-    private void fillCardGithubData(User user) {
+    private void fillCardGithubData(GitskariosUser user) {
         if (user.public_repos > 0) {
             String text = getString(R.string.repos_num, user.public_repos);
             Intent intent = ReposActivity.launchIntent(this, user.login, user.type);
@@ -346,7 +335,7 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
         });
         orgsClient.execute();
 
-        if (user.type == UserType.User) {
+        if (user.type == GitskariosUserType.User) {
             Intent intentStarred = StarredReposActivity.launchIntent(this, user.login);
             ProfileItem profileItemStar = new ProfileItem(Octicons.Icon.oct_star, getString(R.string.profile_starreds), intentStarred);
             profileItemsAdapter.add(profileItemStar);
@@ -354,12 +343,6 @@ public class ProfileActivity extends BackActivity implements BaseClient.OnResult
             Intent intentWatched = WatchedReposActivity.launchIntent(this, user.login);
             ProfileItem profileItemWatched = new ProfileItem(Octicons.Icon.oct_eye, getString(R.string.profile_watched), intentWatched);
             profileItemsAdapter.add(profileItemWatched);
-        }
-    }
-
-    private void fillCardPlan(User user) {
-        if (user.plan != null) {
-
         }
     }
 

@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.alorma.github.R;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.alorma.gitskarios.core.client.StoreCredentials;
 import com.alorma.github.sdk.Head;
 import com.alorma.github.sdk.PullRequest;
@@ -129,7 +130,9 @@ public class PullRequestDetailView extends LinearLayout {
                 OnClickListener issueUserClick = new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent launcherIntent = ProfileActivity.createLauncherIntent(v.getContext(), pullRequest.user);
+                        GitskariosUser user = new GitskariosUser();
+                        user.login = pullRequest.user.login;
+                        Intent launcherIntent = ProfileActivity.createLauncherIntent(v.getContext(), user);
                         v.getContext().startActivity(launcherIntent);
                     }
                 };
@@ -188,7 +191,9 @@ public class PullRequestDetailView extends LinearLayout {
                     textAssignee.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent launcherIntent = ProfileActivity.createLauncherIntent(v.getContext(), assignee);
+                            GitskariosUser user = new GitskariosUser();
+                            user.login = assignee.login;
+                            Intent launcherIntent = ProfileActivity.createLauncherIntent(v.getContext(), user);
                             v.getContext().startActivity(launcherIntent);
                         }
                     });

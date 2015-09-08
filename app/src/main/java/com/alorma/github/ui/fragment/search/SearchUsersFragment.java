@@ -6,9 +6,18 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.alorma.github.R;
+import com.alorma.github.sdk.bean.dto.response.User;
 import com.alorma.github.sdk.services.search.UsersSearchClient;
+import com.alorma.github.ui.callbacks.ListUserCallback;
 import com.alorma.github.ui.fragment.users.BaseUsersListFragment;
+import com.alorma.githubintegration.mapper.ListUserMapper;
+import com.alorma.gitskarios.core.client.BaseClient;
 import com.mikepenz.octicons_typeface_library.Octicons;
+
+import java.util.List;
+
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by Bernat on 08/08/2014.
@@ -57,7 +66,7 @@ public class SearchUsersFragment extends BaseUsersListFragment {
             if (query != null) {
                 super.executeRequest();
                 UsersSearchClient client = new UsersSearchClient(getActivity(), query);
-                client.setOnResultCallback(this);
+                client.setOnResultCallback(new ListUserCallback(this));
                 client.execute();
                 query = null;
                 if (getAdapter() != null) {
@@ -73,7 +82,7 @@ public class SearchUsersFragment extends BaseUsersListFragment {
             if (query != null) {
                 super.executePaginatedRequest(page);
                 UsersSearchClient client = new UsersSearchClient(getActivity(), query, page);
-                client.setOnResultCallback(this);
+                client.setOnResultCallback(new ListUserCallback(this));
                 client.execute();
                 query = null;
                 if (getAdapter() != null) {
@@ -92,5 +101,4 @@ public class SearchUsersFragment extends BaseUsersListFragment {
     protected int getNoDataText() {
         return R.string.no_results;
     }
-
 }

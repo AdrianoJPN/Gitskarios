@@ -10,13 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alorma.github.R;
-import com.alorma.github.sdk.bean.dto.response.User;
-import com.alorma.github.sdk.bean.dto.response.UserType;
 import com.alorma.github.ui.activity.OrganizationActivity;
 import com.alorma.github.ui.activity.ProfileActivity;
-import com.alorma.github.ui.adapter.LazyAdapter;
 import com.alorma.github.ui.adapter.base.RecyclerArrayAdapter;
-import com.alorma.github.ui.view.CircularImageView;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;
 import com.musenkishi.atelier.Atelier;
 import com.musenkishi.atelier.ColorType;
 import com.musenkishi.atelier.swatch.DarkVibrantSwatch;
@@ -30,7 +28,7 @@ import java.util.List;
 /**
  * Created by Bernat on 14/07/2014.
  */
-public class UsersAdapter extends RecyclerArrayAdapter<User, UsersAdapter.ViewHolder> {
+public class UsersAdapter extends RecyclerArrayAdapter<GitskariosUser, UsersAdapter.ViewHolder> {
 
     public UsersAdapter(LayoutInflater inflater) {
         super(inflater);
@@ -46,7 +44,7 @@ public class UsersAdapter extends RecyclerArrayAdapter<User, UsersAdapter.ViewHo
     }
 
     @Override
-    protected void onBindViewHolder(final ViewHolder holder, User user) {
+    protected void onBindViewHolder(final ViewHolder holder, GitskariosUser user) {
         ImageLoader.getInstance().displayImage(user.avatar_url, holder.avatar, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
@@ -98,8 +96,8 @@ public class UsersAdapter extends RecyclerArrayAdapter<User, UsersAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    User user = getItem(getAdapterPosition());
-                    if (user.type == UserType.Organization) {
+                    GitskariosUser user = getItem(getAdapterPosition());
+                    if (user.type == GitskariosUserType.Organization) {
                         v.getContext().startActivity(OrganizationActivity.launchIntent(v.getContext(), user.login));
                     } else {
                         v.getContext().startActivity(ProfileActivity.createLauncherIntent(v.getContext(), user));

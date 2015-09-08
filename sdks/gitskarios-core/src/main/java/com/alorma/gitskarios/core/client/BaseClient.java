@@ -16,12 +16,12 @@ import retrofit.client.Client;
 import retrofit.client.Response;
 import retrofit.converter.Converter;
 
-public abstract class BaseClient<K> implements Callback<K>, RequestInterceptor, RestAdapter.Log {
+public abstract class BaseClient<ApiDto> implements Callback<ApiDto>, RequestInterceptor, RestAdapter.Log {
 
     private StoreCredentials storeCredentials;
 
     protected final Context context;
-    private OnResultCallback<K> onResultCallback;
+    private OnResultCallback<ApiDto> onResultCallback;
     protected Handler handler;
     private ApiClient client;
 
@@ -70,7 +70,7 @@ public abstract class BaseClient<K> implements Callback<K>, RequestInterceptor, 
         }
     }
 
-    public K executeSync() {
+    public ApiDto executeSync() {
         if (getToken() != null) {
             return executeServiceSync(getRestAdapter());
         }
@@ -83,25 +83,26 @@ public abstract class BaseClient<K> implements Callback<K>, RequestInterceptor, 
 
     protected abstract void executeService(RestAdapter restAdapter);
 
-    protected abstract K executeServiceSync(RestAdapter restAdapter);
+    protected abstract ApiDto executeServiceSync(RestAdapter restAdapter);
 
     @Override
-    public void success(final K k, final Response response) {
+    public void success(final ApiDto apiDto, final Response response) {
         if (handler != null) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    sendResponse(k, response);
+                    sendResponse(apiDto, response);
                 }
             });
         } else {
-            sendResponse(k, response);
+            sendResponse(apiDto, response);
         }
     }
 
-    private void sendResponse(K k, Response response) {
+
+    private void sendResponse(ApiDto coreDto, Response response) {
         if (onResultCallback != null) {
-            onResultCallback.onResponseOk(k, response);
+            onResultCallback.onResponseOk(coreDto, response);
         }
     }
 
@@ -130,11 +131,11 @@ public abstract class BaseClient<K> implements Callback<K>, RequestInterceptor, 
         }
     }
 
-    public OnResultCallback<K> getOnResultCallback() {
+    public OnResultCallback<ApiDto> getOnResultCallback() {
         return onResultCallback;
     }
 
-    public void setOnResultCallback(OnResultCallback<K> onResultCallback) {
+    public void setOnResultCallback(OnResultCallback<ApiDto> onResultCallback) {
         this.onResultCallback = onResultCallback;
     }
 
@@ -147,8 +148,8 @@ public abstract class BaseClient<K> implements Callback<K>, RequestInterceptor, 
         return context;
     }
 
-    public interface OnResultCallback<K> {
-        void onResponseOk(K k, Response r);
+    public interface OnResultCallback<ApiDto> {
+        void onResponseOk(ApiDto apiDto, Response r);
 
         void onFail(RetrofitError error);
     }

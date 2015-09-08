@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.user.UserFollowersClient;
+import com.alorma.github.ui.callbacks.ListUserCallback;
 
 /**
  * Created by Bernat on 13/07/2014.
@@ -31,7 +32,7 @@ public class FollowersFragment extends BaseUsersListFragment {
         super.executeRequest();
         UserFollowersClient client = new UserFollowersClient(getActivity(), username);
 
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListUserCallback(this));
         client.execute();
     }
 
@@ -39,7 +40,7 @@ public class FollowersFragment extends BaseUsersListFragment {
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
         UserFollowersClient client = new UserFollowersClient(getActivity(), username, page);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListUserCallback(this));
         client.execute();
     }
 

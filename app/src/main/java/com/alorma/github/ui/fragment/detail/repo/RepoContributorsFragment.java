@@ -13,6 +13,8 @@ import com.alorma.github.sdk.services.repo.GetRepoContributorsClient;
 import com.alorma.github.ui.adapter.users.UsersAdapter;
 import com.alorma.github.ui.fragment.base.PaginatedListFragment;
 import com.alorma.github.ui.listeners.TitleProvider;
+import com.alorma.githubintegration.mapper.ListUserMapper;
+import com.alorma.githubintegration.mapper.UserMapper;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
 import java.util.ArrayList;
@@ -109,10 +111,10 @@ public class RepoContributorsFragment extends PaginatedListFragment<List<Contrib
 
             if (getAdapter() == null) {
                 UsersAdapter adapter = new UsersAdapter(LayoutInflater.from(getActivity()));
-                adapter.addAll(users);
+                adapter.addAll(new ListUserMapper().toCore(users));
                 setAdapter(adapter);
             } else {
-                getAdapter().addAll(users);
+                getAdapter().addAll(new ListUserMapper().toCore(users));
             }
         }
     }

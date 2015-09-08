@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 
 import com.alorma.github.R;
 import com.alorma.github.sdk.bean.dto.response.User;
+import com.alorma.github.sdk.utils.GitskariosSettings;
 import com.alorma.github.ui.adapter.users.UsersAdapter;
 import com.alorma.github.ui.fragment.base.PaginatedListFragment;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
 import java.util.List;
@@ -17,10 +19,10 @@ import retrofit.RetrofitError;
 /**
  * Created by Bernat on 13/07/2014.
  */
-public abstract class BaseUsersListFragment extends PaginatedListFragment<List<User>, UsersAdapter> {
+public abstract class BaseUsersListFragment extends PaginatedListFragment<List<GitskariosUser>, UsersAdapter> {
 
     @Override
-    protected void onResponse(List<User> users, boolean refreshing) {
+    protected void onResponse(List<GitskariosUser> users, boolean refreshing) {
         if (users.size() > 0) {
         hideEmpty();
             if (getAdapter() != null) {

@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.alorma.github.R;
 import com.alorma.github.sdk.services.user.UserFollowingClient;
+import com.alorma.github.ui.callbacks.ListUserCallback;
 
 /**
  * Created by Bernat on 13/07/2014.
@@ -29,14 +30,14 @@ public class FollowingFragment extends BaseUsersListFragment {
     @Override
     protected void executeRequest() {
         UserFollowingClient client = new UserFollowingClient(getActivity(), username);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListUserCallback(this));
         client.execute();
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         UserFollowingClient client = new UserFollowingClient(getActivity(), username, page);
-        client.setOnResultCallback(this);
+        client.setOnResultCallback(new ListUserCallback(this));
         client.execute();
     }
 
