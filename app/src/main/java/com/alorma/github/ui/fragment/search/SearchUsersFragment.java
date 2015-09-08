@@ -5,23 +5,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
+import com.alorma.data.user.list.GitskariosSearchUsersClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.bean.dto.response.User;
-import com.alorma.github.sdk.services.search.UsersSearchClient;
-import com.alorma.github.ui.callbacks.ListUserCallback;
 import com.alorma.github.ui.fragment.users.BaseUsersListFragment;
-import com.alorma.githubintegration.mapper.ListUserMapper;
-import com.alorma.gitskarios.core.client.BaseClient;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
-import java.util.List;
-
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
-/**
- * Created by Bernat on 08/08/2014.
- */
 public class SearchUsersFragment extends BaseUsersListFragment {
 
     private String query;
@@ -65,9 +53,7 @@ public class SearchUsersFragment extends BaseUsersListFragment {
         if (getActivity() != null) {
             if (query != null) {
                 super.executeRequest();
-                UsersSearchClient client = new UsersSearchClient(getActivity(), query);
-                client.setOnResultCallback(new ListUserCallback(this));
-                client.execute();
+                new GitskariosSearchUsersClient(getActivity(), query).create().executeAsync(this);
                 query = null;
                 if (getAdapter() != null) {
                     getAdapter().clear();
@@ -81,9 +67,7 @@ public class SearchUsersFragment extends BaseUsersListFragment {
         if (getActivity() != null) {
             if (query != null) {
                 super.executePaginatedRequest(page);
-                UsersSearchClient client = new UsersSearchClient(getActivity(), query, page);
-                client.setOnResultCallback(new ListUserCallback(this));
-                client.execute();
+                new GitskariosSearchUsersClient(getActivity(), query, page).create().executeAsync(this);
                 query = null;
                 if (getAdapter() != null) {
                     getAdapter().clear();

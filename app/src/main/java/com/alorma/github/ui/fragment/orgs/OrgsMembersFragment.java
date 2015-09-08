@@ -2,21 +2,10 @@ package com.alorma.github.ui.fragment.orgs;
 
 import android.os.Bundle;
 
+import com.alorma.data.user.list.GitskariosOrganizationMembersClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.bean.dto.response.User;
-import com.alorma.github.sdk.services.orgs.OrgsMembersClient;
-import com.alorma.github.ui.callbacks.ListUserCallback;
 import com.alorma.github.ui.fragment.users.BaseUsersListFragment;
-import com.alorma.githubintegration.mapper.ListUserMapper;
 
-import java.util.List;
-
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
-/**
- * Created by Bernat on 13/07/2014.
- */
 public class OrgsMembersFragment extends BaseUsersListFragment {
     private String org;
 
@@ -37,16 +26,12 @@ public class OrgsMembersFragment extends BaseUsersListFragment {
 
     @Override
     protected void executeRequest() {
-        OrgsMembersClient client = new OrgsMembersClient(getActivity(), org);
-        client.setOnResultCallback(new ListUserCallback(this));
-        client.execute();
+        new GitskariosOrganizationMembersClient(getActivity(), org).create().executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
-        OrgsMembersClient client = new OrgsMembersClient(getActivity(), org, page);
-        client.setOnResultCallback(new ListUserCallback(this));
-        client.execute();
+        new GitskariosOrganizationMembersClient(getActivity(), org, page).create().executeAsync(this);
     }
 
     @Override

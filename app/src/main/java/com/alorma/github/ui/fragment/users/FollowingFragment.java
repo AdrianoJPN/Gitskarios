@@ -2,13 +2,15 @@ package com.alorma.github.ui.fragment.users;
 
 import android.os.Bundle;
 
+import com.alorma.data.user.list.GitskariosFollowingUsersClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.user.UserFollowingClient;
-import com.alorma.github.ui.callbacks.ListUserCallback;
+import com.alorma.github.sdk.bean.dto.response.User;
+import com.alorma.github.sdk.services.client.GithubClient;
+import com.alorma.gitskarios.core.BaseDataSource;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 
-/**
- * Created by Bernat on 13/07/2014.
- */
+import java.util.List;
+
 public class FollowingFragment extends BaseUsersListFragment {
     private String username;
 
@@ -29,16 +31,14 @@ public class FollowingFragment extends BaseUsersListFragment {
 
     @Override
     protected void executeRequest() {
-        UserFollowingClient client = new UserFollowingClient(getActivity(), username);
-        client.setOnResultCallback(new ListUserCallback(this));
-        client.execute();
+        BaseDataSource<GithubClient<List<User>>, List<User>, List<GitskariosUser>> client = new GitskariosFollowingUsersClient(getActivity(), username).create();
+        client.executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
-        UserFollowingClient client = new UserFollowingClient(getActivity(), username, page);
-        client.setOnResultCallback(new ListUserCallback(this));
-        client.execute();
+        BaseDataSource<GithubClient<List<User>>, List<User>, List<GitskariosUser>> client = new GitskariosFollowingUsersClient(getActivity(), username).create();
+        client.executeAsync(this);
     }
 
     @Override
@@ -52,4 +52,5 @@ public class FollowingFragment extends BaseUsersListFragment {
     protected int getNoDataText() {
         return R.string.no_followings;
     }
+
 }

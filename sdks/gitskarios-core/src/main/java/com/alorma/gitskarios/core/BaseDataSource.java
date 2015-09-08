@@ -20,10 +20,6 @@ public abstract class BaseDataSource<T extends BaseClient<K>, K, Z> implements B
 
     public abstract BaseMapper<K, Z> getMapper();
 
-    public Z executeSync() {
-        return getMapper().toCore(getApiClient().executeSync());
-    }
-
     public void executeAsync(Callback<Z> callback) {
         this.callback = callback;
         T apiClient = getApiClient();

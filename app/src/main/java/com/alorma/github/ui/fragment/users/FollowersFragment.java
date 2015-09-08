@@ -2,13 +2,15 @@ package com.alorma.github.ui.fragment.users;
 
 import android.os.Bundle;
 
+import com.alorma.data.user.list.GitskariosFollowersUsersClient;
 import com.alorma.github.R;
-import com.alorma.github.sdk.services.user.UserFollowersClient;
-import com.alorma.github.ui.callbacks.ListUserCallback;
+import com.alorma.github.sdk.bean.dto.response.User;
+import com.alorma.github.sdk.services.client.GithubClient;
+import com.alorma.gitskarios.core.BaseDataSource;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 
-/**
- * Created by Bernat on 13/07/2014.
- */
+import java.util.List;
+
 public class FollowersFragment extends BaseUsersListFragment {
     private String username;
 
@@ -30,18 +32,15 @@ public class FollowersFragment extends BaseUsersListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-        UserFollowersClient client = new UserFollowersClient(getActivity(), username);
-
-        client.setOnResultCallback(new ListUserCallback(this));
-        client.execute();
+        BaseDataSource<GithubClient<List<User>>, List<User>, List<GitskariosUser>> dataSource = new GitskariosFollowersUsersClient(getActivity(), username).create();
+        dataSource.executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        UserFollowersClient client = new UserFollowersClient(getActivity(), username, page);
-        client.setOnResultCallback(new ListUserCallback(this));
-        client.execute();
+        BaseDataSource<GithubClient<List<User>>, List<User>, List<GitskariosUser>> dataSource = new GitskariosFollowersUsersClient(getActivity(), username, page).create();
+        dataSource.executeAsync(this);
     }
 
     @Override

@@ -16,9 +16,6 @@ import java.util.List;
 
 import retrofit.RetrofitError;
 
-/**
- * Created by Bernat on 13/07/2014.
- */
 public abstract class BaseUsersListFragment extends PaginatedListFragment<List<GitskariosUser>, UsersAdapter> {
 
     @Override

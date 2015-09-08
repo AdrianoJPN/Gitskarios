@@ -1,11 +1,11 @@
-package com.alorma.data;
+package com.alorma.data.user;
 
 import android.content.Context;
 
 import com.alorma.github.sdk.bean.dto.response.User;
 import com.alorma.github.sdk.services.client.GithubClient;
-import com.alorma.githubintegration.mapper.GithubAuthUserDataSource;
-import com.alorma.githubintegration.mapper.GithubUserDataSource;
+import com.alorma.githubintegration.user.GithubAuthUserDataSource;
+import com.alorma.githubintegration.user.GithubUserDataSource;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.GitskariosFactory;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;

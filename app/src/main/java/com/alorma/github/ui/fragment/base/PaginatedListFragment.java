@@ -1,5 +1,6 @@
 package com.alorma.github.ui.fragment.base;
 
+import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.github.sdk.bean.info.PaginationLink;
 import com.alorma.github.sdk.bean.info.RelType;
@@ -14,12 +15,19 @@ import retrofit.RetrofitError;
 import retrofit.client.Header;
 import retrofit.client.Response;
 
-public abstract class PaginatedListFragment<ItemType, Adapter extends RecyclerArrayAdapter> extends LoadingListFragment<Adapter> implements BaseClient.OnResultCallback<ItemType> {
+public abstract class PaginatedListFragment<ItemType, Adapter extends RecyclerArrayAdapter>
+        extends LoadingListFragment<Adapter> implements BaseClient.OnResultCallback<ItemType>
+        , BaseDataSource.Callback<ItemType> {
 
     protected static final String USERNAME = "USERNAME";
     private PaginationLink bottomPaginationLink;
 
     protected boolean refreshing;
+
+    @Override
+    public void onResponse(ItemType itemType, Response response) {
+        onResponseOk(itemType, response);
+    }
 
     @Override
     public void onResponseOk(ItemType itemType, Response r) {
