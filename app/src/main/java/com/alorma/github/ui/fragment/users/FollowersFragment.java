@@ -32,14 +32,14 @@ public class FollowersFragment extends BaseUsersListFragment {
     @Override
     protected void executeRequest() {
         super.executeRequest();
-        BaseDataSource<List<User>, List<GitskariosUser>> dataSource = new GitskariosFollowersUsersClient(getActivity(), username).create();
+        BaseDataSource<List<GitskariosUser>> dataSource = new GitskariosFollowersUsersClient(getActivity(), username).create();
         dataSource.executeAsync(this);
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        BaseDataSource<List<User>, List<GitskariosUser>> dataSource = new GitskariosFollowersUsersClient(getActivity(), username, page).create();
+        BaseDataSource<List<GitskariosUser>> dataSource = new GitskariosFollowersUsersClient(getActivity(), username, page).create();
         dataSource.executeAsync(this);
     }
 

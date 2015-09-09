@@ -8,13 +8,14 @@ import com.alorma.github.sdk.services.orgs.OrgsReposClient;
 import com.alorma.githubintegration.mapper.repo.list.ListRepositoryMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
+import com.alorma.gitskarios.core.BaseMapperCallback;
 import com.alorma.gitskarios.core.Paginated;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 
 import java.util.List;
 
 public class GithubOrganizationRepositoriesDataSource
-        extends BaseDataSource<List<Repo>, List<GitskariosRepository>>
+        extends BaseDataSource<List<GitskariosRepository>>
         implements Paginated {
 
     private Context context;
@@ -27,17 +28,21 @@ public class GithubOrganizationRepositoriesDataSource
     }
 
     @Override
-    public GithubClient<List<Repo>> getApiClient() {
+    public void executeAsync(Callback<List<GitskariosRepository>> callback) {
+        OrgsReposClient client;
         if (page == 0) {
-            return new OrgsReposClient(context, organization);
+            client = new OrgsReposClient(context, organization);
         } else {
-            return new OrgsReposClient(context, organization, page);
+            client = new OrgsReposClient(context, organization, page);
         }
-    }
 
-    @Override
-    public BaseMapper<List<Repo>, List<GitskariosRepository>> getMapper() {
-        return new ListRepositoryMapper();
+        client.setOnResultCallback(new BaseMapperCallback<List<Repo>, List<GitskariosRepository>>(callback) {
+            @Override
+            protected BaseMapper<List<Repo>, List<GitskariosRepository>> getMapper() {
+                return new ListRepositoryMapper();
+            }
+        });
+        client.execute();
     }
 
     @Override

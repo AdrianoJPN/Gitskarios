@@ -25,12 +25,14 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.alorma.github.BuildConfig;
+import com.alorma.github.GitskariosApplication;
 import com.alorma.github.R;
+import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.gitskarios.core.client.StoreCredentials;
 import com.alorma.github.sdk.bean.dto.response.Notification;
 import com.alorma.github.sdk.bean.dto.response.User;
-import com.alorma.github.sdk.login.AccountsHelper;
+import com.alorma.data.oauth.AccountsHelper;
 import com.alorma.github.sdk.services.notifications.GetNotificationsClient;
 import com.alorma.github.sdk.utils.GitskariosSettings;
 import com.alorma.github.ui.activity.base.BaseActivity;
@@ -269,7 +271,7 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
             }
         });
         resultDrawer = drawer.build();
-        resultDrawer.setSelection(R.id.nav_drawer_events);
+        resultDrawer.setSelection(R.id.nav_drawer_repositories);
     }
 
     private void changeNotificationState(boolean enabled) {
@@ -367,6 +369,10 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
 
         credentials.storeToken(authToken);
         credentials.storeUsername(account.name);
+        credentials.storeApiClientType(AccountsHelper.getApiConnectionType(this, account));
+
+        ApiConnection apiConnection = AccountsHelper.getApiConnection(this, account);
+        ((GitskariosApplication) this.getApplicationContext()).setApiConnection(apiConnection);
 
         if (changingUser) {
             lastUsedFragment = null;
@@ -419,7 +425,7 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
     @Override
     protected void onResume() {
         super.onResume();
-        checkNotifications();
+        // TODO Reenable checkNotifications();
     }
 
     private void checkNotifications() {

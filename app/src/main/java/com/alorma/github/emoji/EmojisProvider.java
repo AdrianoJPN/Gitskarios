@@ -41,7 +41,7 @@ public class EmojisProvider implements BaseClient.OnResultCallback<HashMap<Strin
         } else {
             EmojisClient emojisClient = new EmojisClient(context);
             emojisClient.setOnResultCallback(this);
-            emojisClient.execute();
+            // TODO emojisClient.execute();
         }
         instance.close();
         instance = null;

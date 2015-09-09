@@ -43,19 +43,7 @@ public class GeneralReposFragment extends BaseFragment {
         viewPager.setOffscreenPageLimit(reposAdapter.getCount());
         viewPager.setAdapter(reposAdapter);
 
-        if (ViewCompat.isLaidOut(tabLayout)) {
-            tabLayout.setupWithViewPager(viewPager);
-        } else {
-            tabLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    tabLayout.setupWithViewPager(viewPager);
-
-                    tabLayout.removeOnLayoutChangeListener(this);
-                }
-            });
-        }
-
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -89,7 +77,7 @@ public class GeneralReposFragment extends BaseFragment {
 
         @Override
         public int getCount() {
-            return 5;
+            return 1;
         }
 
         @Override

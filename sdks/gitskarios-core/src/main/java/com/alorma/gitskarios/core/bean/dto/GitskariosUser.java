@@ -9,6 +9,8 @@ import java.util.Date;
  * Created by a557114 on 08/09/2015.
  */
 public class GitskariosUser implements Parcelable {
+    public Integer id;
+    public String name;
     public String login;
     public String avatar_url;
     public String company;

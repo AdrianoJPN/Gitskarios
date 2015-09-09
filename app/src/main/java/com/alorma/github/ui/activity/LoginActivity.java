@@ -25,22 +25,24 @@ import android.os.RemoteException;
 import android.support.annotation.StyleRes;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.alorma.data.oauth.GitskariosOauthRequestTokenClient;
+import com.alorma.data.user.GitskariosUserClient;
 import com.alorma.github.BuildConfig;
 import com.alorma.github.Interceptor;
 import com.alorma.github.R;
-import com.alorma.github.sdk.bean.dto.response.Token;
-import com.alorma.github.sdk.bean.dto.response.User;
-import com.alorma.github.sdk.login.AccountsHelper;
-import com.alorma.github.sdk.security.GitHub;
-import com.alorma.gitskarios.core.GitskariosDeveloperCredentials;
-import com.alorma.github.sdk.services.login.RequestTokenClient;
-import com.alorma.github.sdk.services.user.GetAuthUserClient;
 import com.alorma.github.ui.ErrorHandler;
+import com.alorma.gitskarios.core.Token;
+import com.alorma.data.oauth.AccountsHelper;
+import com.alorma.github.sdk.security.GitHub;
+import com.alorma.gitlabsdk.security.Gitlab;
+import com.alorma.gitskarios.core.BaseDataSource;
+import com.alorma.gitskarios.core.GitskariosDeveloperCredentials;
 import com.alorma.gitskarios.core.ApiConnection;
-import com.alorma.gitskarios.core.client.BaseClient;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.android.vending.billing.IInAppBillingService;
 
 import org.json.JSONException;
@@ -55,7 +57,7 @@ import dmax.dialog.SpotsDialog;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class LoginActivity extends AccountAuthenticatorActivity implements BaseClient.OnResultCallback<User> {
+public class LoginActivity extends AccountAuthenticatorActivity implements BaseDataSource.Callback<GitskariosUser> {
 
     public static final String ARG_ACCOUNT_TYPE = "ARG_ACCOUNT_TYPE";
     public static final String ARG_AUTH_TYPE = "ARG_AUTH_TYPE";
@@ -63,12 +65,10 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     public static final String ADDING_FROM_APP = "ADDING_FROM_APP";
     public static final String FROM_DELETE = "FROM_DELETE";
     private static final String SKU_MULTI_ACCOUNT = "com.alorma.github.multiaccount";
-    private static final String SCOPES = "gist,user,notifications,repo,delete_repo";
 
     private SpotsDialog progressDialog;
     private String accessToken;
     private String scope;
-    private RequestTokenClient requestTokenClient;
 
     private IInAppBillingService mService;
 
@@ -88,6 +88,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     private String purchaseId;
     private boolean fromApp;
     private boolean fromDeleteRepo;
+    private ApiConnection apiConnection;
 
     /**
      * There is three ways to get to this activity:
@@ -105,11 +106,35 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         final View loginButtonGithub = findViewById(R.id.login_github);
-
         loginButtonGithub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 login(new GitHub());
+            }
+        });
+
+        final View gitlab_conf = findViewById(R.id.gitlab_conf);
+        gitlab_conf.setEnabled(false);
+
+        final View loginButtonGitab = findViewById(R.id.login_gitlab);
+        final EditText gitlab_app_key = (EditText) findViewById(R.id.gitlab_app_key);
+        final View gitlab_app_key_button = findViewById(R.id.gitlab_app_key_button);
+        gitlab_app_key_button.setEnabled(false);
+        gitlab_app_key.setEnabled(false);
+        gitlab_app_key_button.setEnabled(false);
+        loginButtonGitab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gitlab_conf.setEnabled(true);
+                gitlab_app_key.setEnabled(true);
+                gitlab_app_key_button.setEnabled(true);
+            }
+        });
+
+        gitlab_app_key_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endAccess(gitlab_app_key.getText().toString(), null, new Gitlab());
             }
         });
 
@@ -149,29 +174,38 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
 
             fromDeleteRepo = Boolean.valueOf(uri.getQueryParameter("fromDeleteRepo"));
 
-            if (requestTokenClient == null) {
-                requestTokenClient = new RequestTokenClient(LoginActivity.this, code);
-                requestTokenClient.setOnResultCallback(new BaseClient.OnResultCallback<Token>() {
-                    @Override
-                    public void onResponseOk(Token token, Response r) {
-                        if (token.access_token != null) {
-                            endAccess(token.access_token, token.scope);
-                        } else if (token.error != null) {
-                            Toast.makeText(LoginActivity.this, token.error, Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFail(RetrofitError error) {
-                        ErrorHandler.onError(LoginActivity.this, "WebViewCustomClient", error);
-                    }
-                });
-                requestTokenClient.execute();
-            }
+            handleLoginFromGithub(code, new GitHub());
         } else if (fromAccounts) {
             login(new GitHub());
         } else if (!fromApp && accounts != null && accounts.length > 0) {
             openMain();
+        }
+    }
+
+    private void handleLoginFromGithub(String code, ApiConnection apiConnection) {
+        BaseDataSource<Token> tokenTokenBaseDataSource =
+                new GitskariosOauthRequestTokenClient(LoginActivity.this, code, apiConnection)
+                        .create();
+        if (tokenTokenBaseDataSource != null) {
+            final ApiConnection finalConnection = apiConnection;
+            tokenTokenBaseDataSource.executeAsync(new BaseDataSource.Callback<Token>() {
+                @Override
+                public void onResponse(Token token, Response response) {
+                    if (token.access_token != null) {
+                        endAccess(token.access_token, token.scope, finalConnection);
+                    } else if (token.error != null) {
+                        Toast.makeText(LoginActivity.this, token.error, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFail(RetrofitError error) {
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                    }
+                    ErrorHandler.onError(LoginActivity.this, "Login", error);
+                }
+            });
         }
     }
 
@@ -226,24 +260,19 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
             return;
         }
 
-        String url = String.format("%s?client_id=%s&scope=" + SCOPES,
-                client.getApiOauthRequest(),
-                GitskariosDeveloperCredentials.getInstance().getProvider(client).getApiClient());
-
         Uri callbackUri = Uri.EMPTY.buildUpon()
                 .scheme(getString(R.string.oauth_scheme))
                 .authority("oauth")
-                .appendQueryParameter("fromDeleteRepo", String.valueOf(fromDeleteRepo))
                 .build();
 
-        url = Uri.parse(url).buildUpon().appendQueryParameter("redirect_uri", callbackUri.toString()).build().toString();
+        Uri uri = client.buildUri(callbackUri);
 
         final List<ResolveInfo> browserList = getBrowserList();
 
         final List<LabeledIntent> intentList = new ArrayList<>();
 
         for (final ResolveInfo resolveInfo : browserList) {
-            final Intent newIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            final Intent newIntent = new Intent(Intent.ACTION_VIEW, uri);
             newIntent.setComponent(new ComponentName(resolveInfo.activityInfo.packageName,
                     resolveInfo.activityInfo.name));
 
@@ -302,6 +331,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
                 }
             }
         }
+
     }
 
     private void showDialogBuyMultiAccount() {
@@ -351,25 +381,30 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         finish();
     }
 
-    private void endAccess(String accessToken, String scope) {
+    private void endAccess(String accessToken, String scope, ApiConnection apiConnection) {
         this.accessToken = accessToken;
         this.scope = scope;
+        this.apiConnection = apiConnection;
 
-        progressDialog.setMessage(getString(R.string.loading_user));
+        if (progressDialog != null) {
+            progressDialog.setMessage(getString(R.string.loading_user));
+        } else {
+            showProgressDialog(R.style.SpotDialog_LoadingUser);
+        }
 
-        GetAuthUserClient userClient = new GetAuthUserClient(this, accessToken);
-        userClient.setOnResultCallback(this);
-        userClient.execute();
+        new GitskariosUserClient(this, accessToken).setApiConnection(apiConnection).create().executeAsync(this);
+
     }
 
     @Override
-    public void onResponseOk(User user, Response r) {
+    public void onResponse(GitskariosUser user, Response r) {
         AccountManager accountManager = AccountManager.get(this);
 
         accounts = accountManager.getAccountsByType(getString(R.string.account_type));
 
         for (Account account : accounts) {
-            if (account.name.equals(user.login)) {
+            if (account.name.equals(user.login)
+                    && AccountsHelper.getApiConnectionType(this, account).equals(apiConnection.getType())) {
                 removeAndAdd(account, user);
                 return;
             }
@@ -379,7 +414,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
 
     }
 
-    private void removeAndAdd(Account account, final User user) {
+    private void removeAndAdd(Account account, final GitskariosUser user) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 AccountManagerCallback<Bundle> callback = new AccountManagerCallback<Bundle>() {
@@ -407,9 +442,9 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
         }
     }
 
-    private void addAccount(User user) {
+    private void addAccount(GitskariosUser user) {
         Account account = new Account(user.login, getString(R.string.account_type));
-        Bundle userData = AccountsHelper.buildBundle(user.name, user.email, user.avatar_url, scope);
+        Bundle userData = AccountsHelper.buildBundle(user.name, user.email, user.avatar_url, scope, apiConnection);
         userData.putString(AccountManager.KEY_AUTHTOKEN, accessToken);
 
         AccountManager accountManager = AccountManager.get(this);

@@ -6,9 +6,11 @@ import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.services.client.GithubClient;
 import com.alorma.github.sdk.services.repos.UserReposFromOrganizationClient;
 import com.alorma.github.sdk.services.repos.WatchedReposClient;
+import com.alorma.github.sdk.services.search.RepoSearchClient;
 import com.alorma.githubintegration.mapper.repo.list.ListRepositoryMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
+import com.alorma.gitskarios.core.BaseMapperCallback;
 import com.alorma.gitskarios.core.Paginated;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 
@@ -18,7 +20,7 @@ import java.util.List;
  * Created by a557114 on 08/09/2015.
  */
 public class GithubOrganizationsRepositoriesDataSource
-        extends BaseDataSource<List<Repo>, List<GitskariosRepository>>
+        extends BaseDataSource<List<GitskariosRepository>>
         implements Paginated {
 
     private Context context;
@@ -29,17 +31,20 @@ public class GithubOrganizationsRepositoriesDataSource
     }
 
     @Override
-    public GithubClient<List<Repo>> getApiClient() {
+    public void executeAsync(Callback<List<GitskariosRepository>> callback) {
+        UserReposFromOrganizationClient client;
         if (page == 0) {
-            return new UserReposFromOrganizationClient(context);
+            client = new UserReposFromOrganizationClient(context);
         } else {
-            return new UserReposFromOrganizationClient(context, page);
+            client = new UserReposFromOrganizationClient(context, page);
         }
-    }
-
-    @Override
-    public BaseMapper<List<Repo>, List<GitskariosRepository>> getMapper() {
-        return new ListRepositoryMapper();
+        client.setOnResultCallback(new BaseMapperCallback<List<Repo>, List<GitskariosRepository>>(callback) {
+            @Override
+            protected BaseMapper<List<Repo>, List<GitskariosRepository>> getMapper() {
+                return new ListRepositoryMapper();
+            }
+        });
+        client.execute();
     }
 
     @Override

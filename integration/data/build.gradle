@@ -20,5 +20,5 @@ android {
 
 dependencies {
     compile project(':integration:githubintegration')
-    compile project(':sdks:gitlabsdk')
+    compile project(':integration:gitlabintegration')
 }

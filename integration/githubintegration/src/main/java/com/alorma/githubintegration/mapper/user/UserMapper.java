@@ -18,6 +18,8 @@ public class UserMapper implements BaseMapper<User, GitskariosUser> {
     public GitskariosUser toCore(@NonNull User user) {
         GitskariosUser gitskariosUser = new GitskariosUser();
 
+        gitskariosUser.id = user.id;
+        gitskariosUser.name = user.name;
         gitskariosUser.login = user.login;
         gitskariosUser.email = user.email;
         gitskariosUser.created_at = user.created_at;

@@ -8,13 +8,14 @@ import com.alorma.github.sdk.services.user.UserFollowingClient;
 import com.alorma.githubintegration.mapper.user.list.ListUserMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
+import com.alorma.gitskarios.core.BaseMapperCallback;
 import com.alorma.gitskarios.core.Paginated;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 
 import java.util.List;
 
 public class GithubFollowingUsersDataSource
-        extends BaseDataSource<List<User>, List<GitskariosUser>>
+        extends BaseDataSource<List<GitskariosUser>>
         implements Paginated {
 
     private Context context;
@@ -27,17 +28,21 @@ public class GithubFollowingUsersDataSource
     }
 
     @Override
-    public GithubClient<List<User>> getApiClient() {
+    public void executeAsync(Callback<List<GitskariosUser>> callback) {
+        UserFollowingClient client;
         if (page == 0) {
-            return new UserFollowingClient(context, login);
+            client = new UserFollowingClient(context, login);
         } else {
-            return new UserFollowingClient(context, login, page);
+            client = new UserFollowingClient(context, login, page);
         }
-    }
 
-    @Override
-    public BaseMapper<List<User>, List<GitskariosUser>> getMapper() {
-        return new ListUserMapper();
+        client.setOnResultCallback(new BaseMapperCallback<List<User>, List<GitskariosUser>>(callback) {
+            @Override
+            protected BaseMapper<List<User>, List<GitskariosUser>> getMapper() {
+                return new ListUserMapper();
+            }
+        });
+        client.execute();
     }
 
     @Override

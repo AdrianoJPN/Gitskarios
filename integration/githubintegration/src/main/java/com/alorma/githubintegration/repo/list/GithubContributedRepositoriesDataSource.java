@@ -8,6 +8,7 @@ import com.alorma.github.sdk.services.repos.MemberReposClient;
 import com.alorma.githubintegration.mapper.repo.list.ListRepositoryMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
+import com.alorma.gitskarios.core.BaseMapperCallback;
 import com.alorma.gitskarios.core.Paginated;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * Created by a557114 on 08/09/2015.
  */
 public class GithubContributedRepositoriesDataSource
-        extends BaseDataSource<List<Repo>, List<GitskariosRepository>>
+        extends BaseDataSource<List<GitskariosRepository>>
         implements Paginated {
 
     private Context context;
@@ -28,17 +29,21 @@ public class GithubContributedRepositoriesDataSource
     }
 
     @Override
-    public GithubClient<List<Repo>> getApiClient() {
+    public void executeAsync(Callback<List<GitskariosRepository>> callback) {
+        MemberReposClient client;
         if (page == 0) {
-            return new MemberReposClient(context);
+            client =  new MemberReposClient(context);
         } else {
-            return new MemberReposClient(context, page);
+            client =  new MemberReposClient(context, page);
         }
-    }
 
-    @Override
-    public BaseMapper<List<Repo>, List<GitskariosRepository>> getMapper() {
-        return new ListRepositoryMapper();
+        client.setOnResultCallback(new BaseMapperCallback<List<Repo>, List<GitskariosRepository>>(callback) {
+            @Override
+            protected BaseMapper<List<Repo>, List<GitskariosRepository>> getMapper() {
+                return new ListRepositoryMapper();
+            }
+        });
+        client.execute();
     }
 
     @Override

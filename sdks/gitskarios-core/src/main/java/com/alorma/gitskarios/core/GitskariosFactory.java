@@ -1,7 +1,9 @@
 package com.alorma.gitskarios.core;
 
-public interface GitskariosFactory<K, Z> {
+public interface GitskariosFactory<Z> {
 
-    BaseDataSource<K, Z> create();
+    BaseDataSource<Z> create();
+
+    GitskariosFactory<Z> setApiConnection(ApiConnection apiConnection);
 
 }

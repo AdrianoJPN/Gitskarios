@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alorma.github.R;
-import com.alorma.github.sdk.login.AccountsHelper;
+import com.alorma.data.oauth.AccountsHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**

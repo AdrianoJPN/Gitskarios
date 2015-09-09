@@ -18,7 +18,7 @@ import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.gitskarios.core.client.StoreCredentials;
 import com.alorma.github.sdk.bean.dto.request.RepoRequestDTO;
 import com.alorma.github.sdk.bean.info.RepoInfo;
-import com.alorma.github.sdk.login.AccountsHelper;
+import com.alorma.data.oauth.AccountsHelper;
 import com.alorma.github.sdk.services.repo.BranchesCallback;
 import com.alorma.github.sdk.services.repo.DeleteRepoClient;
 import com.alorma.github.sdk.services.repo.GetRepoBranchesClient;

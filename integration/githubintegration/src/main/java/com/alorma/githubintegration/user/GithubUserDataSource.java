@@ -8,9 +8,14 @@ import com.alorma.github.sdk.services.user.RequestUserClient;
 import com.alorma.githubintegration.mapper.user.UserMapper;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
+import com.alorma.gitskarios.core.BaseMapperCallback;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
+import com.alorma.gitskarios.core.client.BaseClient;
 
-public class GithubUserDataSource extends BaseDataSource<User, GitskariosUser> {
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+public class GithubUserDataSource extends BaseDataSource<GitskariosUser> {
     private final Context context;
     private final String login;
 
@@ -21,12 +26,14 @@ public class GithubUserDataSource extends BaseDataSource<User, GitskariosUser> {
     }
 
     @Override
-    public GithubClient<User> getApiClient() {
-        return new RequestUserClient(context, login);
-    }
-
-    @Override
-    public BaseMapper<User, GitskariosUser> getMapper() {
-        return new UserMapper();
+    public void executeAsync(Callback<GitskariosUser> callback) {
+        RequestUserClient requestUserClient = new RequestUserClient(context, login);
+        requestUserClient.setOnResultCallback(new BaseMapperCallback<User, GitskariosUser>(callback) {
+            @Override
+            protected BaseMapper<User, GitskariosUser> getMapper() {
+                return new UserMapper();
+            }
+        });
+        requestUserClient.execute();
     }
 }

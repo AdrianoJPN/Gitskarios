@@ -3,7 +3,13 @@ package com.alorma.github.ui.fragment.repos;
 import android.os.Bundle;
 
 import com.alorma.data.repos.list.GitskariosUserRepositoriesClient;
+import com.alorma.github.GitskariosApplication;
 import com.alorma.github.R;
+import com.alorma.gitskarios.core.ApiConnection;
+import com.alorma.gitskarios.core.BaseDataSource;
+import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
+
+import java.util.List;
 
 public class ReposFragment extends BaseReposListFragment {
 
@@ -35,13 +41,27 @@ public class ReposFragment extends BaseReposListFragment {
     protected void executeRequest() {
         super.executeRequest();
 
-        new GitskariosUserRepositoriesClient(getActivity(), username).create().executeAsync(this);
+        ApiConnection apiConnection = ((GitskariosApplication) getActivity().getApplicationContext()).getApiConnection();
+
+        BaseDataSource<List<GitskariosRepository>> dataSource = new GitskariosUserRepositoriesClient(getActivity(), username)
+                .setApiConnection(apiConnection)
+                .create();
+        if (dataSource != null) {
+            dataSource.executeAsync(this);
+        }
     }
 
     @Override
     protected void executePaginatedRequest(int page) {
         super.executePaginatedRequest(page);
-        new GitskariosUserRepositoriesClient(getActivity(), username, page).create().executeAsync(this);
+        ApiConnection apiConnection = ((GitskariosApplication) getActivity().getApplicationContext()).getApiConnection();
+
+        BaseDataSource<List<GitskariosRepository>> dataSource = new GitskariosUserRepositoriesClient(getActivity(), username, page)
+                .setApiConnection(apiConnection)
+                .create();
+        if (dataSource != null) {
+            dataSource.executeAsync(this);
+        }
     }
 
     @Override

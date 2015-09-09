@@ -1,14 +1,12 @@
 package com.alorma.gitskarios.core;
 
-import com.alorma.gitskarios.core.client.BaseClient;
-
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
  * Created by a557114 on 08/09/2015.
  */
-public abstract class BaseDataSource<K, Z> implements BaseClient.OnResultCallback<K> {
+public abstract class BaseDataSource<Z>  {
 
     private Callback<Z> callback;
 
@@ -16,32 +14,7 @@ public abstract class BaseDataSource<K, Z> implements BaseClient.OnResultCallbac
 
     }
 
-    public abstract BaseClient<K> getApiClient();
-
-    public abstract BaseMapper<K, Z> getMapper();
-
-    public void executeAsync(Callback<Z> callback) {
-        this.callback = callback;
-        BaseClient<K> apiClient = getApiClient();
-        if (apiClient != null) {
-            apiClient.setOnResultCallback(this);
-            apiClient.execute();
-        }
-    }
-
-    @Override
-    public void onResponseOk(K k, Response r) {
-        if (callback != null) {
-            callback.onResponse(getMapper().toCore(k), r);
-        }
-    }
-
-    @Override
-    public void onFail(RetrofitError error) {
-        if (callback != null) {
-            callback.onFail(error);
-        }
-    }
+    public abstract void executeAsync(Callback<Z> callback);
 
     public interface Callback<Z> {
         void onResponse(Z z, Response response);

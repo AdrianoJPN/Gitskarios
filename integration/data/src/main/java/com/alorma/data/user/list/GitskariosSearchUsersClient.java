@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.alorma.github.sdk.bean.dto.response.User;
 import com.alorma.githubintegration.user.list.GithubSearchUsersDataSource;
+import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.GitskariosFactory;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
@@ -11,7 +12,7 @@ import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import java.util.List;
 
 public class GitskariosSearchUsersClient
-        implements GitskariosFactory<List<User>, List<GitskariosUser>> {
+        implements GitskariosFactory<List<GitskariosUser>> {
 
     private final Context context;
     private final String query;
@@ -28,11 +29,17 @@ public class GitskariosSearchUsersClient
     }
 
     @Override
-    public BaseDataSource<List<User>, List<GitskariosUser>> create() {
+    public BaseDataSource<List<GitskariosUser>> create() {
         GithubSearchUsersDataSource githubFollowingUsersDataSource = new GithubSearchUsersDataSource(context, query);
         if (page != 0) {
             githubFollowingUsersDataSource.setPage(page);
         }
         return githubFollowingUsersDataSource;
     }
+
+    @Override
+    public GitskariosFactory<List<GitskariosUser>> setApiConnection(ApiConnection apiConnection) {
+        return null;
+    }
+
 }

@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.alorma.github.R;
 import com.alorma.gitskarios.core.client.StoreCredentials;
 import com.alorma.gitskarios.core.client.UnAuthIntent;
-import com.alorma.github.sdk.login.AccountsHelper;
+import com.alorma.data.oauth.AccountsHelper;
 import com.alorma.github.ui.activity.LoginActivity;
 
 import dmax.dialog.SpotsDialog;

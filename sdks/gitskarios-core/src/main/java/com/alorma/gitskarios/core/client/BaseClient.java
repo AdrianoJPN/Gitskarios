@@ -120,7 +120,7 @@ public abstract class BaseClient<ApiDto> implements Callback<ApiDto>, RequestInt
         }
     }
 
-    private void sendError(RetrofitError error) {
+    protected void sendError(RetrofitError error) {
         if (error.getResponse() != null && error.getResponse().getStatus() == 401) {
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
             manager.sendBroadcast(new UnAuthIntent(storeCredentials.token()));
@@ -138,7 +138,6 @@ public abstract class BaseClient<ApiDto> implements Callback<ApiDto>, RequestInt
     public void setOnResultCallback(OnResultCallback<ApiDto> onResultCallback) {
         this.onResultCallback = onResultCallback;
     }
-
 
     protected String getToken() {
         return storeCredentials.token();

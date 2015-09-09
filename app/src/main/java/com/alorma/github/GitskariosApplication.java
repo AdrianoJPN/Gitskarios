@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.alorma.github.sdk.security.GitHub;
+import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.GitskariosDeveloperCredentials;
 import com.alorma.gitlabsdk.security.Gitlab;
 import com.alorma.gitskarios.core.client.credentials.SimpleDeveloperCredentialsProvider;
@@ -22,6 +23,8 @@ import io.fabric.sdk.android.Fabric;
  */
 public class GitskariosApplication extends Application {
 
+    private ApiConnection apiConnection;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -38,7 +41,7 @@ public class GitskariosApplication extends Application {
                 new SimpleDeveloperCredentialsProvider(BuildConfig.GH_CLIENT_ID, BuildConfig.GH_CLIENT_SECRET, BuildConfig.GH_CLIENT_CALLBACK));
 
         GitskariosDeveloperCredentials.init(new Gitlab(),
-                new SimpleDeveloperCredentialsProvider(BuildConfig.GL_CLIENT_ID, BuildConfig.GL_CLIENT_SECRET, BuildConfig.GL_CLIENT_CALLBACK));
+                new SimpleDeveloperCredentialsProvider(BuildConfig.GLAB_CLIENT_ID, BuildConfig.GLAB_CLIENT_SECRET, BuildConfig.GLAB_CLIENT_CALLBACK));
 
         JodaTimeAndroid.init(this);
 
@@ -49,4 +52,11 @@ public class GitskariosApplication extends Application {
         return (GitskariosApplication) context.getApplicationContext();
     }
 
+    public void setApiConnection(ApiConnection apiConnection) {
+        this.apiConnection = apiConnection;
+    }
+
+    public ApiConnection getApiConnection() {
+        return apiConnection;
+    }
 }

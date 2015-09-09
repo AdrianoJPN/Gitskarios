@@ -108,7 +108,7 @@ public class ProfileActivity extends BackActivity implements OnCheckFollowingUse
     @Override
     protected void getContent() {
         if (profileItemsAdapter == null || profileItemsAdapter.getItemCount() == 0) {
-            BaseDataSource<User, GitskariosUser> requestClient;
+            BaseDataSource<GitskariosUser> requestClient;
             user = null;
             if (getIntent().getExtras() != null) {
                 if (getIntent().getExtras().containsKey(USER)) {
