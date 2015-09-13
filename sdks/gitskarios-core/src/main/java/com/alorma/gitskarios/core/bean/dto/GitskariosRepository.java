@@ -21,7 +21,7 @@ public class GitskariosRepository implements Parcelable {
     public boolean isPrivate;
     public int stargazers_count = -1;
     public int subscribers_count = -1;
-    public int forks_count;
+    public int forks_count = -1;
     public GitskariosPermissions gitskariosPermissions;
     public boolean has_downloads;
     public boolean has_wiki;
