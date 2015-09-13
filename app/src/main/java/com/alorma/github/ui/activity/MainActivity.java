@@ -387,9 +387,11 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
                             startActivity(launcherIntent);
                         } else {
                             MainActivity.startMainActivityWithNewAccount(MainActivity.this, account);
+                            finish();
                         }
                     } else {
                         MainActivity.startMainActivityWithNewAccount(MainActivity.this, account);
+                        finish();
                     }
                     return false;
                 } else {
