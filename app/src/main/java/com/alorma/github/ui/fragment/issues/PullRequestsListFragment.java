@@ -106,7 +106,7 @@ public class PullRequestsListFragment extends PaginatedListFragment<List<PullReq
                 }
                 GetPullsClient issuesClient = new GetPullsClient(getActivity(), issueInfo);
                 issuesClient.setOnResultCallback(this);
-                issuesClient.execute();
+                //issuesClient.execute();
             }
         }
     }
@@ -125,7 +125,7 @@ public class PullRequestsListFragment extends PaginatedListFragment<List<PullReq
                 }
                 GetPullsClient issuesClient = new GetPullsClient(getActivity(), issueInfo, page);
                 issuesClient.setOnResultCallback(this);
-                issuesClient.execute();
+                //issuesClient.execute();
             }
         }
     }

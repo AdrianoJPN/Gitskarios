@@ -143,7 +143,7 @@ public class IssuesListFragment extends PaginatedListFragment<List<Issue>, Issue
 
                     IssuesSearchClient searchClient = new IssuesSearchClient(getActivity(), searchClientRequest.request());
                     searchClient.setOnResultCallback(this);
-                    searchClient.execute();
+                    //searchClient.execute();
                 }
             } else {
                 if (currentFilter == 0 || currentFilter == 1) {
@@ -157,7 +157,7 @@ public class IssuesListFragment extends PaginatedListFragment<List<Issue>, Issue
                     map.put("state", issueInfo.state.name());
                     GetIssuesClient issuesClient = new GetIssuesClient(getActivity(), issueInfo, map);
                     issuesClient.setOnResultCallback(this);
-                    issuesClient.execute();
+                    //issuesClient.execute();
                 }
             }
         }
@@ -179,7 +179,7 @@ public class IssuesListFragment extends PaginatedListFragment<List<Issue>, Issue
 
                     IssuesSearchClient searchClient = new IssuesSearchClient(getActivity(), searchClientRequest.request(), page);
                     searchClient.setOnResultCallback(this);
-                    searchClient.execute();
+                    //searchClient.execute();
                 }
             } else {
                 if (currentFilter == 0 || currentFilter == 1) {
@@ -193,7 +193,7 @@ public class IssuesListFragment extends PaginatedListFragment<List<Issue>, Issue
                     map.put("state", issueInfo.state.name());
                     GetIssuesClient issuesClient = new GetIssuesClient(getActivity(), issueInfo, map, page);
                     issuesClient.setOnResultCallback(this);
-                    issuesClient.execute();
+                    //issuesClient.execute();
                 }
             }
         }

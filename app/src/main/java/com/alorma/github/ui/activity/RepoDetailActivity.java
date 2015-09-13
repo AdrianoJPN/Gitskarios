@@ -9,7 +9,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,32 +19,18 @@ import com.alorma.github.R;
 import com.alorma.github.sdk.bean.dto.request.RepoRequestDTO;
 import com.alorma.github.sdk.bean.info.RepoInfo;
 import com.alorma.github.sdk.services.repo.GetRepoBranchesClient;
-import com.alorma.github.ui.ErrorHandler;
 import com.alorma.github.ui.activity.base.BackActivity;
 import com.alorma.github.ui.callbacks.DialogBranchesCallback;
-import com.alorma.github.ui.fragment.commit.CommitsListFragment;
 import com.alorma.github.ui.fragment.detail.repo.BackManager;
 import com.alorma.github.ui.fragment.detail.repo.BranchManager;
-import com.alorma.github.ui.fragment.detail.repo.PermissionsManager;
-import com.alorma.github.ui.fragment.detail.repo.RepoAboutFragment;
-import com.alorma.github.ui.fragment.detail.repo.RepoContributorsFragment;
-import com.alorma.github.ui.fragment.detail.repo.SourceListFragment;
-import com.alorma.github.ui.fragment.issues.IssuesListFragment;
-import com.alorma.github.ui.fragment.issues.PullRequestsListFragment;
-import com.alorma.github.ui.fragment.releases.RepoReleasesFragment;
 import com.alorma.github.ui.listeners.TitleProvider;
 import com.alorma.github.ui.presenter.RepositoryDetailPresenter;
 import com.alorma.github.utils.ShortcutUtils;
-import com.alorma.gitskarios.core.bean.dto.GitskariosPermissions;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
-import com.alorma.gitskarios.core.client.BaseClient;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import retrofit.RetrofitError;
 
 /**
  * Created by Bernat on 17/07/2014.
@@ -125,7 +110,7 @@ public class RepoDetailActivity extends BackActivity
         this.requestRepoInfo = repoInfo;
 
         repositoryDetailPresenter = new RepositoryDetailPresenter();
-        repositoryDetailPresenter.setPresenterCallback(this).load(repoInfo);
+        repositoryDetailPresenter.setPresenterCallback(this).load(this, repoInfo);
     }
 
 
@@ -281,6 +266,7 @@ public class RepoDetailActivity extends BackActivity
             }
 
             viewPager.setAdapter(new NavigationPagerAdapter(getSupportFragmentManager(), fragments));
+            tabLayout.setupWithViewPager(viewPager);
         }
     }
 
