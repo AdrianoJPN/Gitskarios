@@ -32,6 +32,10 @@ public class RepoMapper implements BaseMapper<GitlabProject, GitskariosRepositor
             gitskariosRepository.owner = new GitskariosUser();
             gitskariosRepository.owner.login = gitskariosRepository.full_name.split("/")[0];
         }
+        if (gitskariosRepository.owner == null || gitskariosRepository.owner.login == null) {
+            gitskariosRepository.owner = new GitskariosUser();
+            gitskariosRepository.owner.login = gitskariosRepository.full_name.split("/")[0];
+        }
         gitskariosRepository.name = gitskariosRepository.full_name.split("/")[1];
         gitskariosRepository.description = gitlabProject.description;
         gitskariosRepository.isPrivate = gitlabProject.visibility_level == 0 || gitlabProject.visibility_level == 10;

@@ -37,13 +37,23 @@ public class ReposAdapter extends RecyclerArrayAdapter<GitskariosRepository, Rep
         holder.textTitle.setText(showOwnerName ? repo.owner.login : repo.name);
         //new EmojiBitmapLoader().parseTextView(holder.textTitle);
 
-        String starText = holder.itemView.getResources().getString(R.string.star_icon_text, repo.stargazers_count);
-        applyIcon(holder.textStarts, Octicons.Icon.oct_star);
-        holder.textStarts.setText(starText);
+        if (repo.stargazers_count > -1) {
+            String starText = holder.itemView.getResources().getString(R.string.star_icon_text, repo.stargazers_count);
+            applyIcon(holder.textStarts, Octicons.Icon.oct_star);
+            holder.textStarts.setText(starText);
+            holder.textStarts.setVisibility(View.VISIBLE);
+        } else {
+            holder.textStarts.setVisibility(View.INVISIBLE);
+        }
 
-        String forkText = holder.itemView.getResources().getString(R.string.fork_icon_text, repo.forks_count);
-        applyIcon(holder.textForks, Octicons.Icon.oct_repo_forked);
-        holder.textForks.setText(forkText);
+        if (repo.forks_count > -1) {
+            String forkText = holder.itemView.getResources().getString(R.string.fork_icon_text, repo.forks_count);
+            applyIcon(holder.textForks, Octicons.Icon.oct_repo_forked);
+            holder.textForks.setText(forkText);
+            holder.textForks.setVisibility(View.VISIBLE);
+        } else {
+            holder.textForks.setVisibility(View.INVISIBLE);
+        }
 
         if (repo.description != null) {
             holder.textDescription.setVisibility(View.VISIBLE);

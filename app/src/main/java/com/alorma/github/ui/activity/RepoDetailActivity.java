@@ -17,16 +17,9 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.alorma.github.R;
-import com.alorma.gitskarios.core.bean.dto.GitskariosPermissions;
-import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
-import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.github.sdk.bean.dto.request.RepoRequestDTO;
-import com.alorma.github.sdk.bean.dto.response.Permissions;
-import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.bean.info.RepoInfo;
-import com.alorma.github.sdk.services.repo.EditRepoClient;
 import com.alorma.github.sdk.services.repo.GetRepoBranchesClient;
-import com.alorma.github.sdk.services.repo.GetRepoClient;
 import com.alorma.github.ui.ErrorHandler;
 import com.alorma.github.ui.activity.base.BackActivity;
 import com.alorma.github.ui.callbacks.DialogBranchesCallback;
@@ -41,7 +34,11 @@ import com.alorma.github.ui.fragment.issues.IssuesListFragment;
 import com.alorma.github.ui.fragment.issues.PullRequestsListFragment;
 import com.alorma.github.ui.fragment.releases.RepoReleasesFragment;
 import com.alorma.github.ui.listeners.TitleProvider;
+import com.alorma.github.ui.presenter.RepositoryDetailPresenter;
 import com.alorma.github.utils.ShortcutUtils;
+import com.alorma.gitskarios.core.bean.dto.GitskariosPermissions;
+import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
+import com.alorma.gitskarios.core.client.BaseClient;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
@@ -49,13 +46,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by Bernat on 17/07/2014.
  */
 public class RepoDetailActivity extends BackActivity
-        implements BaseClient.OnResultCallback<GitskariosRepository>, AdapterView.OnItemSelectedListener {
+        implements AdapterView.OnItemSelectedListener,
+        RepositoryDetailPresenter.RepoDetailPresenterCallback {
 
     public static final String REPO_INFO = "REPO_INFO";
     public static final String REPO_INFO_NAME = "REPO_INFO_NAME";
@@ -68,6 +65,7 @@ public class RepoDetailActivity extends BackActivity
     private List<Fragment> listFragments;
     private TabLayout tabLayout;
     private RepoInfo requestRepoInfo;
+    private RepositoryDetailPresenter repositoryDetailPresenter;
 
     public static Intent createLauncherIntent(Context context, RepoInfo repoInfo) {
         Bundle bundle = new Bundle();
@@ -125,27 +123,11 @@ public class RepoDetailActivity extends BackActivity
 
     private void load(RepoInfo repoInfo) {
         this.requestRepoInfo = repoInfo;
-        /*GetRepoClient repoClient = new GetRepoClient(this, repoInfo);
-        repoClient.setOnResultCallback(this);
-        repoClient.execute();*/
+
+        repositoryDetailPresenter = new RepositoryDetailPresenter();
+        repositoryDetailPresenter.setPresenterCallback(this).load(repoInfo);
     }
 
-    private RepoInfo getRepoInfo() {
-        RepoInfo repoInfo = new RepoInfo();
-        if (currentRepo != null) {
-            if (currentRepo.owner != null) {
-                repoInfo.owner = currentRepo.owner.login;
-            }
-            repoInfo.name = currentRepo.name;
-            if (requestRepoInfo != null && requestRepoInfo.branch != null) {
-                repoInfo.branch = requestRepoInfo.branch;
-            } else {
-                repoInfo.branch = currentRepo.default_branch;
-            }
-        }
-
-        return repoInfo;
-    }
 
     private class NavigationPagerAdapter extends FragmentPagerAdapter {
 
@@ -236,10 +218,10 @@ public class RepoDetailActivity extends BackActivity
         } else if (item.getItemId() == R.id.action_repo_change_branch) {
             changeBranch();
         } else if (item.getItemId() == R.id.action_manage_repo) {
-            Intent intent = ManageRepositoryActivity.createIntent(this, getRepoInfo(), createRepoRequest());
+            Intent intent = ManageRepositoryActivity.createIntent(this, repositoryDetailPresenter.getRepoInfo(currentRepo), createRepoRequest());
             startActivityForResult(intent, EDIT_REPO);
         } else if (item.getItemId() == R.id.action_add_shortcut) {
-            ShortcutUtils.addShortcut(this, getRepoInfo());
+            ShortcutUtils.addShortcut(this, repositoryDetailPresenter.getRepoInfo(currentRepo));
         }
 
         return false;
@@ -260,8 +242,8 @@ public class RepoDetailActivity extends BackActivity
     }
 
     private void changeBranch() {
-        GetRepoBranchesClient repoBranchesClient = new GetRepoBranchesClient(this, getRepoInfo());
-        repoBranchesClient.setOnResultCallback(new DialogBranchesCallback(this, getRepoInfo()) {
+        GetRepoBranchesClient repoBranchesClient = new GetRepoBranchesClient(this, repositoryDetailPresenter.getRepoInfo(currentRepo));
+        repoBranchesClient.setOnResultCallback(new DialogBranchesCallback(this, repositoryDetailPresenter.getRepoInfo(currentRepo)) {
             @Override
             protected void onBranchSelected(String branch) {
                 currentRepo.default_branch = branch;
@@ -287,7 +269,7 @@ public class RepoDetailActivity extends BackActivity
 
 
     @Override
-    public void onResponseOk(GitskariosRepository repo, Response r) {
+    public void setUpWithRepo(GitskariosRepository repo, List<Fragment> fragments) {
         hideProgressDialog();
         if (repo != null) {
             this.currentRepo = repo;
@@ -295,72 +277,11 @@ public class RepoDetailActivity extends BackActivity
 
             setTitle(currentRepo.name);
             if (getSupportActionBar() != null) {
-                getSupportActionBar().setSubtitle(getRepoInfo().branch);
+                getSupportActionBar().setSubtitle(repositoryDetailPresenter.getRepoInfo(currentRepo).branch);
             }
 
-            createFragments();
-
-            this.invalidateOptionsMenu();
-
-            if (listFragments != null) {
-                for (Fragment fragment : listFragments) {
-                    if (fragment instanceof PermissionsManager) {
-                        GitskariosPermissions permissions = repo.gitskariosPermissions;
-                        ((PermissionsManager) fragment).setPermissions(permissions.admin, permissions.push, permissions.pull);
-                    }
-                }
-            }
+            viewPager.setAdapter(new NavigationPagerAdapter(getSupportFragmentManager(), fragments));
         }
-    }
-
-    private void createFragments() {
-
-        createListFragments();
-
-        viewPager.setAdapter(new NavigationPagerAdapter(getSupportFragmentManager(), listFragments));
-
-        viewPager.setOffscreenPageLimit(listFragments.size());
-        if (ViewCompat.isLaidOut(tabLayout)) {
-            tabLayout.setupWithViewPager(viewPager);
-        } else {
-            tabLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    tabLayout.setupWithViewPager(viewPager);
-
-                    tabLayout.removeOnLayoutChangeListener(this);
-                }
-            });
-        }
-    }
-
-    private void createListFragments() {
-        if (listFragments != null) {
-            listFragments.clear();
-        }
-        if (listFragments == null || listFragments.size() == 0 && currentRepo != null) {
-            RepoAboutFragment aboutFragment = RepoAboutFragment.newInstance(currentRepo, getRepoInfo());
-            SourceListFragment sourceListFragment = SourceListFragment.newInstance(getRepoInfo());
-            CommitsListFragment commitsListFragment = CommitsListFragment.newInstance(getRepoInfo());
-            IssuesListFragment issuesListFragment = IssuesListFragment.newInstance(getRepoInfo(), false);
-            PullRequestsListFragment pullRequestsListFragment = PullRequestsListFragment.newInstance(getRepoInfo());
-            RepoReleasesFragment repoReleasesFragment = RepoReleasesFragment.newInstance(getRepoInfo());
-            RepoContributorsFragment repoCollaboratorsFragment = RepoContributorsFragment.newInstance(getRepoInfo(), currentRepo.owner);
-
-            listFragments = new ArrayList<>();
-            listFragments.add(aboutFragment);
-            listFragments.add(sourceListFragment);
-            listFragments.add(commitsListFragment);
-            listFragments.add(issuesListFragment);
-            listFragments.add(pullRequestsListFragment);
-            listFragments.add(repoReleasesFragment);
-            listFragments.add(repoCollaboratorsFragment);
-        }
-    }
-
-    @Override
-    public void onFail(RetrofitError error) {
-        ErrorHandler.onError(this, "RepoDetailActivity", error);
     }
 
     @Override

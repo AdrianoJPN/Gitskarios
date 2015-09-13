@@ -48,7 +48,8 @@ import retrofit.client.Response;
 /**
  * Created by Bernat on 01/01/2015.
  */
-public class RepoAboutFragment extends Fragment implements TitleProvider, BranchManager, BackManager, BaseClient.OnResultCallback<String> {
+public class RepoAboutFragment extends Fragment
+        implements TitleProvider, BranchManager, BackManager, BaseClient.OnResultCallback<String> {
 
     private static final String REPO_INFO = "REPO_INFO";
     private static final String REPO = "REPO";
@@ -158,7 +159,7 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
                     if (currentRepo.owner.type == GitskariosUserType.User) {
                         Intent intent = ProfileActivity.createLauncherIntent(getActivity(), currentRepo.owner);
                         startActivity(intent);
-                    } else if (currentRepo.owner.type == GitskariosUserType.User) {
+                    } else if (currentRepo.owner.type == GitskariosUserType.Organization) {
                         Intent intent = OrganizationActivity.launchIntent(getActivity(), currentRepo.owner.login);
                         startActivity(intent);
                     }
@@ -187,9 +188,9 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
         if (repoInfo == null) {
             loadArguments();
         }
-        GetReadmeContentsClient repoMarkdownClient = new GetReadmeContentsClient(getActivity(), repoInfo);
-        repoMarkdownClient.setCallback(this);
-        repoMarkdownClient.execute();
+//        GetReadmeContentsClient repoMarkdownClient = new GetReadmeContentsClient(getActivity(), repoInfo);
+//        repoMarkdownClient.setCallback(this);
+//        repoMarkdownClient.execute();
 
         getStarWatchData();
     }
@@ -242,9 +243,10 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
     @Override
     public void setCurrentBranch(String branch) {
         if (getActivity() != null) {
-            GetReadmeContentsClient repoMarkdownClient = new GetReadmeContentsClient(getActivity(), repoInfo);
-            repoMarkdownClient.setCallback(this);
-            repoMarkdownClient.execute();
+            // TODO
+//            GetReadmeContentsClient repoMarkdownClient = new GetReadmeContentsClient(getActivity(), repoInfo);
+//            repoMarkdownClient.setCallback(this);
+//            repoMarkdownClient.execute();
         }
     }
 
@@ -256,17 +258,17 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
 
 
     protected void getStarWatchData() {
-        CheckRepoStarredClient repoStarredClient = new CheckRepoStarredClient(getActivity(), currentRepo.owner.login, currentRepo.name);
+        /*CheckRepoStarredClient repoStarredClient = new CheckRepoStarredClient(getActivity(), currentRepo.owner.login, currentRepo.name);
         repoStarredClient.setOnResultCallback(new StarredResult());
         repoStarredClient.execute();
 
         CheckRepoWatchedClient repoWatchedClient = new CheckRepoWatchedClient(getActivity(), currentRepo.owner.login, currentRepo.name);
         repoWatchedClient.setOnResultCallback(new WatchedResult());
-        repoWatchedClient.execute();
+        repoWatchedClient.execute();*/
     }
 
     private void changeStarStatus() {
-        if (repoStarred) {
+       /* if (repoStarred) {
             UnstarRepoClient unstarRepoClient = new UnstarRepoClient(getActivity(), currentRepo.owner.login, currentRepo.name);
             unstarRepoClient.setOnResultCallback(new UnstarActionResult());
             unstarRepoClient.execute();
@@ -274,11 +276,11 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
             StarRepoClient starRepoClient = new StarRepoClient(getActivity(), currentRepo.owner.login, currentRepo.name);
             starRepoClient.setOnResultCallback(new StarActionResult());
             starRepoClient.execute();
-        }
+        }*/
     }
 
     private void changeWatchedStatus() {
-        if (repoWatched) {
+        /*if (repoWatched) {
             UnwatchRepoClient unwatchRepoClient = new UnwatchRepoClient(getActivity(), currentRepo.owner.login, currentRepo.name);
             unwatchRepoClient.setOnResultCallback(new UnwatchActionResult());
             unwatchRepoClient.execute();
@@ -286,7 +288,7 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
             WatchRepoClient watchRepoClient = new WatchRepoClient(getActivity(), currentRepo.owner.login, currentRepo.name);
             watchRepoClient.setOnResultCallback(new WatchActionResult());
             watchRepoClient.execute();
-        }
+        }*/
     }
 
     /**
