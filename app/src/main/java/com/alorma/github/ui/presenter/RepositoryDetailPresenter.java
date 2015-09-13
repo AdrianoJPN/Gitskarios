@@ -3,9 +3,10 @@ package com.alorma.github.ui.presenter;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
+import com.alorma.data.GitskariosRepositoryClient;
+import com.alorma.github.GitskariosApplication;
 import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.bean.info.RepoInfo;
-import com.alorma.github.sdk.services.repo.GetRepoClient;
 import com.alorma.github.ui.fragment.commit.CommitsListFragment;
 import com.alorma.github.ui.fragment.detail.repo.PermissionsManager;
 import com.alorma.github.ui.fragment.detail.repo.RepoAboutFragment;
@@ -15,6 +16,8 @@ import com.alorma.github.ui.fragment.issues.IssuesListFragment;
 import com.alorma.github.ui.fragment.issues.PullRequestsListFragment;
 import com.alorma.github.ui.fragment.releases.RepoReleasesFragment;
 import com.alorma.githubintegration.mapper.repo.RepositoryMapper;
+import com.alorma.gitskarios.core.ApiConnection;
+import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.bean.dto.GitskariosPermissions;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 import com.alorma.gitskarios.core.client.BaseClient;
@@ -25,14 +28,18 @@ import java.util.List;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class RepositoryDetailPresenter implements BaseClient.OnResultCallback<Repo> {
+public class RepositoryDetailPresenter implements BaseDataSource.Callback<GitskariosRepository> {
 
     private RepoDetailPresenterCallback presenterCallback;
 
     public void load(Context context, RepoInfo repoInfo) {
-        GetRepoClient repoClient = new GetRepoClient(context, repoInfo);
-        repoClient.setOnResultCallback(this);
-        repoClient.execute();
+        GitskariosRepositoryClient client = new GitskariosRepositoryClient(context, repoInfo);
+        ApiConnection apiConnection = ((GitskariosApplication) context.getApplicationContext()).getApiConnection();
+        client.setApiConnection(apiConnection);
+        BaseDataSource<GitskariosRepository> dataSource = client.create();
+        if (dataSource != null) {
+            dataSource.executeAsync(this);
+        }
     }
 
     private List<Fragment> createListFragments(GitskariosRepository currentRepo) {
@@ -93,10 +100,8 @@ public class RepositoryDetailPresenter implements BaseClient.OnResultCallback<Re
     }
 
     @Override
-    public void onResponseOk(Repo repo, Response r) {
+    public void onResponse(GitskariosRepository repository, Response r) {
         if (presenterCallback != null) {
-
-            GitskariosRepository repository = new RepositoryMapper().toCore(repo);
 
             List<Fragment> listFragments = createListFragments(repository);
 

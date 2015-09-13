@@ -25,7 +25,6 @@ public class GitskariosUserRepositoriesClient
     public GitskariosUserRepositoriesClient(Context context, String username) {
         this.context = context;
         this.username = username;
-
     }
 
     public GitskariosUserRepositoriesClient(Context context, String username, int page) {
