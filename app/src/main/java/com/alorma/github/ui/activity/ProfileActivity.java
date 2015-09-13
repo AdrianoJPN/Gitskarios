@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.alorma.data.user.GitskariosUserClient;
+import com.alorma.github.GitskariosApplication;
 import com.alorma.github.R;
 import com.alorma.github.bean.ProfileItem;
 import com.alorma.github.sdk.bean.dto.response.Organization;
@@ -34,6 +35,7 @@ import com.alorma.github.ui.activity.gists.GistsMainActivity;
 import com.alorma.github.ui.adapter.ProfileItemsAdapter;
 import com.alorma.github.utils.TimeUtils;
 import com.alorma.githubintegration.mapper.user.UserMapper;
+import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;
@@ -108,7 +110,7 @@ public class ProfileActivity extends BackActivity implements OnCheckFollowingUse
     @Override
     protected void getContent() {
         if (profileItemsAdapter == null || profileItemsAdapter.getItemCount() == 0) {
-            BaseDataSource<GitskariosUser> requestClient;
+            GitskariosUserClient requestClient;
             user = null;
             if (getIntent().getExtras() != null) {
                 if (getIntent().getExtras().containsKey(USER)) {
@@ -120,23 +122,26 @@ public class ProfileActivity extends BackActivity implements OnCheckFollowingUse
 
             if (user != null) {
                 if (user.login.equalsIgnoreCase(settings.getUserName())) {
-                    requestClient = new GitskariosUserClient(this).create();
+                    requestClient = new GitskariosUserClient(this);
                     collapsingToolbarLayout.setTitle(settings.getUserName());
                 } else {
-                    requestClient = new GitskariosUserClient(this, user.login).create();
+                    requestClient = new GitskariosUserClient(this, user.login);
 
                     collapsingToolbarLayout.setTitle(user.login);
                 }
             } else {
-                requestClient = new GitskariosUserClient(this).create();
+                requestClient = new GitskariosUserClient(this);
             }
 
             invalidateOptionsMenu();
 
             showProgressDialog(R.style.SpotDialog_LoadingUser);
 
-            if (requestClient != null) {
-                requestClient.executeAsync(this);
+            ApiConnection apiConnection = ((GitskariosApplication) getApplicationContext()).getApiConnection();
+            requestClient.setApiConnection(apiConnection);
+            BaseDataSource<GitskariosUser> dataSource = requestClient.create();
+            if (dataSource != null) {
+                dataSource.executeAsync(this);
             }
         }
     }
@@ -307,7 +312,8 @@ public class ProfileActivity extends BackActivity implements OnCheckFollowingUse
         final ProfileItem profileItemOrgs = new ProfileItem(Octicons.Icon.oct_organization, getString(R.string.orgs_num_empty), intent);
         profileItemsAdapter.add(profileItemOrgs);
 
-        GetOrgsClient orgsClient = new GetOrgsClient(this, user.login);
+        // TODO
+        /*GetOrgsClient orgsClient = new GetOrgsClient(this, user.login);
         orgsClient.setOnResultCallback(new BaseClient.OnResultCallback<List<Organization>>() {
             @Override
             public void onResponseOk(List<Organization> organizations, Response r) {
@@ -324,7 +330,7 @@ public class ProfileActivity extends BackActivity implements OnCheckFollowingUse
 
             }
         });
-        orgsClient.execute();
+        orgsClient.execute();*/
 
         if (user.type == GitskariosUserType.User) {
             Intent intentStarred = StarredReposActivity.launchIntent(this, user.login);

@@ -427,6 +427,8 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
         credentials.storeApiClientType(AccountsHelper.getApiConnectionType(this, account));
 
         ApiConnection apiConnection = AccountsHelper.getApiConnection(this, account);
+
+        ((GitskariosApplication) getApplicationContext()).setApiConnection(apiConnection);
         mainPresenter.setApiConnection(apiConnection);
 
         if (changingUser) {
