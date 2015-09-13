@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import com.alorma.github.BuildConfig;
 import com.alorma.github.GitskariosApplication;
 import com.alorma.github.R;
+import com.alorma.github.ui.presenter.MainPresenter;
 import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.gitskarios.core.client.StoreCredentials;
@@ -73,8 +74,9 @@ import java.util.List;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends BaseActivity implements OnMenuItemSelectedListener {
+public class MainActivity extends BaseActivity implements OnMenuItemSelectedListener, MainPresenter.MainPresenterCallback {
 
+    private static final String ACCOUNT = "ACCOUNT";
     private GeneralReposFragment reposFragment;
     private EventsListFragment eventsFragment;
 
@@ -87,9 +89,21 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
     private int notificationsSizeCount = 0;
     private DonateFragment donateFragment;
     private SecondarySwitchDrawerItem notificationsDrawerItem;
+    private MainPresenter mainPresenter;
 
     public static void startActivity(Activity context) {
         Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
+    }
+
+    public static void startMainActivityWithNewAccount(Context context, Account account) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (account != null) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(ACCOUNT, account);
+            intent.putExtras(bundle);
+        }
         context.startActivity(intent);
     }
 
@@ -99,13 +113,14 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
 
         donateFragment = new DonateFragment();
 
+        mainPresenter = new MainPresenter();
+        mainPresenter.setMainPresenterCallback(this);
+
         if (getSupportFragmentManager() != null) {
             getSupportFragmentManager().beginTransaction().add(donateFragment, "donate").commit();
         }
 
         setContentView(R.layout.generic_toolbar);
-
-        createDrawer();
 
         checkChangeLog();
     }
@@ -130,10 +145,19 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
     public void onStart() {
         super.onStart();
 
+        if (getIntent().getExtras() != null) {
+            selectedAccount = getIntent().getExtras().getParcelable(ACCOUNT);
+        }
+
         AccountManager accountManager = AccountManager.get(this);
         Account[] accounts = accountManager.getAccountsByType(getString(R.string.account_type));
 
+        buildHeader();
+
         if (accounts != null && accounts.length > 0) {
+            if (selectedAccount == null) {
+                selectedAccount = accounts[0];
+            }
             if (headerResult != null) {
                 if (headerResult.getProfiles() != null) {
                     ArrayList<IProfile> iProfiles = new ArrayList<>(headerResult.getProfiles());
@@ -162,7 +186,7 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
 
             headerResult.addProfiles(itemAdd);
 
-            selectAccount(accounts[0]);
+            selectAccount(selectedAccount);
         }
     }
 
@@ -174,7 +198,9 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
                 .withIcon(userAvatar)
                 .withEmail(getUserExtraName(account))
                 .withIdentifier(i);
-        headerResult.addProfiles(profileDrawerItem);
+        if (headerResult != null) {
+            headerResult.addProfiles(profileDrawerItem);
+        }
     }
 
     private String getUserExtraName(Account account) {
@@ -189,11 +215,10 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
         return accountName;
     }
 
-    private void createDrawer() {
-
+    @Override
+    public void createDrawer() {
         int iconColor = getResources().getColor(R.color.icons);
 
-        buildHeader();
         //Now create your drawer and pass the AccountHeader.Result
         DrawerBuilder drawer = new DrawerBuilder();
         drawer.withActivity(this);
@@ -215,12 +240,34 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
                 .withOnCheckedChangeListener(notificationsCheckedListener)
                 .withSelectable(false)
                 .withIcon(Octicons.Icon.oct_bell)
-                .withIconColor(iconColor);
+                .withIconColor(iconColor)
+                .withEnabled(mainPresenter.isNotificationsEnabled());
         drawer.addDrawerItems(
-                new PrimaryDrawerItem().withName(R.string.menu_events).withIcon(Octicons.Icon.oct_calendar).withIconColor(iconColor).withIdentifier(R.id.nav_drawer_events),
-                new PrimaryDrawerItem().withName(R.string.navigation_general_repositories).withIcon(Octicons.Icon.oct_repo).withIconColor(iconColor).withIdentifier(R.id.nav_drawer_repositories),
-                new PrimaryDrawerItem().withName(R.string.navigation_people).withIcon(Octicons.Icon.oct_person).withIconColor(iconColor).withIdentifier(R.id.nav_drawer_people),
-                new PrimaryDrawerItem().withName(R.string.navigation_gists).withIcon(Octicons.Icon.oct_gist).withIconColor(iconColor).withIdentifier(R.id.nav_drawer_gists).withSelectable(false),
+                new PrimaryDrawerItem()
+                        .withName(R.string.menu_events)
+                        .withIcon(Octicons.Icon.oct_calendar)
+                        .withIconColor(iconColor)
+                        .withIdentifier(R.id.nav_drawer_events)
+                        .withEnabled(mainPresenter.isEventsEnabled()),
+                new PrimaryDrawerItem()
+                        .withName(R.string.navigation_general_repositories)
+                        .withIcon(Octicons.Icon.oct_repo)
+                        .withIconColor(iconColor)
+                        .withIdentifier(R.id.nav_drawer_repositories)
+                        .withEnabled(mainPresenter.isRepositoriesEnabled()),
+                new PrimaryDrawerItem()
+                        .withName(R.string.navigation_people)
+                        .withIcon(Octicons.Icon.oct_person)
+                        .withIconColor(iconColor)
+                        .withIdentifier(R.id.nav_drawer_people)
+                        .withEnabled(mainPresenter.isPeopleEnabled()),
+                new PrimaryDrawerItem()
+                        .withName(R.string.navigation_gists)
+                        .withIcon(Octicons.Icon.oct_gist)
+                        .withIconColor(iconColor)
+                        .withIdentifier(R.id.nav_drawer_gists)
+                        .withSelectable(false)
+                        .withEnabled(mainPresenter.isPeopleEnabled()),
                 new DividerDrawerItem(),
                 notificationsDrawerItem,
                 new SecondaryDrawerItem().withName(R.string.navigation_settings).withIcon(Octicons.Icon.oct_gear).withIconColor(iconColor).withIdentifier(R.id.nav_drawer_settings).withSelectable(false),
@@ -236,16 +283,24 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
                     int identifier = drawerItem.getIdentifier();
                     switch (identifier) {
                         case R.id.nav_drawer_events:
-                            onUserEventsSelected();
+                            if (mainPresenter.isEventsEnabled()) {
+                                onUserEventsSelected();
+                            }
                             break;
                         case R.id.nav_drawer_repositories:
-                            onReposSelected();
+                            if (mainPresenter.isRepositoriesEnabled()) {
+                                onReposSelected();
+                            }
                             break;
                         case R.id.nav_drawer_people:
-                            onPeopleSelected();
+                            if (mainPresenter.isPeopleEnabled()) {
+                                onPeopleSelected();
+                            }
                             break;
                         case R.id.nav_drawer_gists:
-                            onGistsSelected();
+                            if (mainPresenter.isGistEnabled()) {
+                                onGistsSelected();
+                            }
                             break;
                         case R.id.nav_drawer_notifications:
                             openNotifications();
@@ -331,10 +386,10 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
                             Intent launcherIntent = ProfileActivity.createLauncherIntent(MainActivity.this);
                             startActivity(launcherIntent);
                         } else {
-                            selectAccount(account);
+                            MainActivity.startMainActivityWithNewAccount(MainActivity.this, account);
                         }
                     } else {
-                        selectAccount(account);
+                        MainActivity.startMainActivityWithNewAccount(MainActivity.this, account);
                     }
                     return false;
                 } else {
@@ -368,11 +423,11 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
         String authToken = AccountsHelper.getUserToken(this, account);
 
         credentials.storeToken(authToken);
-        credentials.storeUsername(account.name);
+        credentials.storeUsername(account.name.split("/")[0]);
         credentials.storeApiClientType(AccountsHelper.getApiConnectionType(this, account));
 
         ApiConnection apiConnection = AccountsHelper.getApiConnection(this, account);
-        ((GitskariosApplication) this.getApplicationContext()).setApiConnection(apiConnection);
+        mainPresenter.setApiConnection(apiConnection);
 
         if (changingUser) {
             lastUsedFragment = null;
@@ -425,26 +480,30 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO Reenable checkNotifications();
+        if (mainPresenter.isNotificationsEnabled()) {
+            checkNotifications();
+        }
     }
 
     private void checkNotifications() {
-        GetNotificationsClient client = new GetNotificationsClient(this);
-        client.setOnResultCallback(new BaseClient.OnResultCallback<List<Notification>>() {
-            @Override
-            public void onResponseOk(List<Notification> notifications, Response r) {
-                if (notifications != null) {
-                    notificationsSizeCount = notifications.size();
-                    invalidateOptionsMenu();
+        if (mainPresenter.isNotificationsEnabled()) {
+            GetNotificationsClient client = new GetNotificationsClient(this);
+            client.setOnResultCallback(new BaseClient.OnResultCallback<List<Notification>>() {
+                @Override
+                public void onResponseOk(List<Notification> notifications, Response r) {
+                    if (notifications != null) {
+                        notificationsSizeCount = notifications.size();
+                        invalidateOptionsMenu();
+                    }
                 }
-            }
 
-            @Override
-            public void onFail(RetrofitError error) {
+                @Override
+                public void onFail(RetrofitError error) {
 
-            }
-        });
-        client.execute();
+                }
+            });
+            client.execute();
+        }
     }
 
     @Override
@@ -454,15 +513,19 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
             Intent intent = SearchActivity.launchIntent(this);
             startActivity(intent);
         } else if (item.getItemId() == R.id.action_notifications) {
-            openNotifications();
+            if (mainPresenter.isNotificationsEnabled()) {
+                openNotifications();
+            }
         }
 
         return false;
     }
 
     private void openNotifications() {
-        Intent intent = NotificationsActivity.launchIntent(this);
-        startActivity(intent);
+        if (mainPresenter.isNotificationsEnabled()) {
+            Intent intent = NotificationsActivity.launchIntent(this);
+            startActivity(intent);
+        }
     }
 
     private void setFragment(Fragment fragment) {
@@ -492,37 +555,45 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
 
     @Override
     public boolean onReposSelected() {
-        clearFragments();
+        if (mainPresenter.isRepositoriesEnabled()) {
+            clearFragments();
 
-        if (reposFragment == null) {
-            reposFragment = GeneralReposFragment.newInstance();
+            if (reposFragment == null) {
+                reposFragment = GeneralReposFragment.newInstance();
+            }
+
+            setFragment(reposFragment, false);
         }
-
-        setFragment(reposFragment, false);
         return true;
     }
 
     @Override
     public boolean onPeopleSelected() {
-        setFragment(GeneralPeopleFragment.newInstance(), false);
+        if (mainPresenter.isPeopleEnabled()) {
+            setFragment(GeneralPeopleFragment.newInstance(), false);
+        }
         return false;
     }
 
     public boolean onGistsSelected() {
-        Intent intent = GistsMainActivity.createLauncherIntent(this);
-        startActivity(intent);
+        if (mainPresenter.isGistEnabled()) {
+            Intent intent = GistsMainActivity.createLauncherIntent(this);
+            startActivity(intent);
+        }
         return false;
     }
 
     @Override
     public boolean onUserEventsSelected() {
-        String user = new StoreCredentials(this).getUserName();
-        if (user != null) {
-            if (eventsFragment == null) {
-                eventsFragment = EventsListFragment.newInstance(user);
+        if (mainPresenter.isEventsEnabled()) {
+            String user = new StoreCredentials(this).getUserName();
+            if (user != null) {
+                if (eventsFragment == null) {
+                    eventsFragment = EventsListFragment.newInstance(user);
+                }
             }
+            setFragment(eventsFragment);
         }
-        setFragment(eventsFragment);
         return true;
     }
 

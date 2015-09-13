@@ -178,7 +178,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseD
         } else if (fromAccounts) {
             login(new GitHub());
         } else if (!fromApp && accounts != null && accounts.length > 0) {
-            openMain();
+            openMain(accounts[0]);
         }
     }
 
@@ -214,7 +214,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseD
             setResult(RESULT_OK);
             finish();
         } else if (fromApp) {
-            openMain();
+            openMain(null);
         } else {
             finish();
         }
@@ -375,9 +375,9 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseD
         getPackageManager().setComponentEnabledSetting(componentName, flag, PackageManager.DONT_KILL_APP);
     }
 
-    private void openMain() {
+    private void openMain(Account account) {
         enableCreateGist(true);
-        MainActivity.startActivity(LoginActivity.this);
+        MainActivity.startMainActivityWithNewAccount(this, account);
         finish();
     }
 
@@ -403,7 +403,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseD
         accounts = accountManager.getAccountsByType(getString(R.string.account_type));
 
         for (Account account : accounts) {
-            if (account.name.equals(user.login)
+            if (account.name.split("/")[0].equals(user.login)
                     && AccountsHelper.getApiConnectionType(this, account).equals(apiConnection.getType())) {
                 removeAndAdd(account, user);
                 return;
@@ -443,7 +443,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseD
     }
 
     private void addAccount(GitskariosUser user) {
-        Account account = new Account(user.login, getString(R.string.account_type));
+        Account account = new Account(user.login + "/" + apiConnection.getType(), getString(R.string.account_type));
         Bundle userData = AccountsHelper.buildBundle(user.name, user.email, user.avatar_url, scope, apiConnection);
         userData.putString(AccountManager.KEY_AUTHTOKEN, accessToken);
 
@@ -464,7 +464,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseD
             setResult(RESULT_OK);
             finish();
         } else {
-            openMain();
+            openMain(account);
         }
     }
 
