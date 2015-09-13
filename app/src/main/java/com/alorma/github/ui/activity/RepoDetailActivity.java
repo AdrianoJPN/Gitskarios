@@ -124,7 +124,7 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
         this.requestRepoInfo = repoInfo;
         GetRepoClient repoClient = new GetRepoClient(this, repoInfo);
         repoClient.setOnResultCallback(this);
-        repoClient.execute();
+        //repoClient.execute();
     }
 
     private RepoInfo getRepoInfo() {

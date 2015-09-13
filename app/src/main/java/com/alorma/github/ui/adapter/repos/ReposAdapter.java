@@ -1,5 +1,6 @@
 package com.alorma.github.ui.adapter.repos;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import com.alorma.github.R;
 import com.alorma.github.UrlsManager;
 import com.alorma.github.emoji.EmojiBitmapLoader;
 import com.alorma.github.sdk.bean.dto.response.Repo;
+import com.alorma.github.sdk.bean.info.RepoInfo;
+import com.alorma.github.ui.activity.RepoDetailActivity;
 import com.alorma.github.ui.adapter.base.RecyclerArrayAdapter;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -82,7 +85,11 @@ public class ReposAdapter extends RecyclerArrayAdapter<GitskariosRepository, Rep
                 public void onClick(View v) {
                     GitskariosRepository item = getItem(getAdapterPosition());
                     if (item != null) {
-                        v.getContext().startActivity(new UrlsManager(v.getContext()).manageRepos(Uri.parse(item.html_url)));
+                        RepoInfo repoInfo = new RepoInfo();
+                        repoInfo.owner = item.owner;
+                        repoInfo.name = item.name;
+                        Intent intent = RepoDetailActivity.createLauncherIntent(v.getContext(), repoInfo);
+                        v.getContext().startActivity(intent);
                     }
                 }
             });
