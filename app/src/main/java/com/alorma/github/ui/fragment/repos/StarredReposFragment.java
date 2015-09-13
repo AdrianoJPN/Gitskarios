@@ -4,8 +4,9 @@ import android.os.Bundle;
 
 import com.alorma.data.repos.list.GitskariosStarredRepositoriesClient;
 import com.alorma.github.R;
+import com.alorma.github.ui.listeners.TitleProvider;
 
-public class StarredReposFragment extends BaseReposListFragment {
+public class StarredReposFragment extends BaseReposListFragment implements TitleProvider{
 
     private String username;
 
@@ -47,5 +48,10 @@ public class StarredReposFragment extends BaseReposListFragment {
         if (getArguments() != null) {
             username = getArguments().getString(USERNAME);
         }
+    }
+
+    @Override
+    public int getTitle() {
+        return R.string.navigation_starred_repos;
     }
 }

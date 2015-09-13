@@ -4,8 +4,9 @@ import android.os.Bundle;
 
 import com.alorma.data.repos.list.GitskariosWatchedRepositoriesClient;
 import com.alorma.github.R;
+import com.alorma.github.ui.listeners.TitleProvider;
 
-public class WatchedReposFragment extends BaseReposListFragment {
+public class WatchedReposFragment extends BaseReposListFragment implements TitleProvider {
 
     private String username;
 
@@ -46,5 +47,10 @@ public class WatchedReposFragment extends BaseReposListFragment {
         if (getArguments() != null) {
             username = getArguments().getString(USERNAME);
         }
+    }
+
+    @Override
+    public int getTitle() {
+        return R.string.navigation_watched_repos;
     }
 }

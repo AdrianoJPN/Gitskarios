@@ -12,13 +12,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alorma.github.GitskariosApplication;
 import com.alorma.github.R;
 import com.alorma.github.ui.fragment.base.BaseFragment;
+import com.alorma.github.ui.listeners.TitleProvider;
+import com.alorma.github.ui.presenter.GeneralReposPresenter;
+import com.alorma.gitskarios.core.ApiConnection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Bernat on 06/06/2015.
  */
-public class GeneralReposFragment extends BaseFragment {
+public class GeneralReposFragment extends BaseFragment implements GeneralReposPresenter.GeneralReposPresenterCallback {
+
+    private GeneralReposPresenter generalReposPresenter;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     public static GeneralReposFragment newInstance() {
         return new GeneralReposFragment();
@@ -34,16 +45,17 @@ public class GeneralReposFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabStrip);
+
+        tabLayout = (TabLayout) view.findViewById(R.id.tabStrip);
         ViewCompat.setElevation(tabLayout, 4);
 
-        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
+        viewPager = (ViewPager) view.findViewById(R.id.pager);
 
-        ReposPagerAdapter reposAdapter = new ReposPagerAdapter(getChildFragmentManager());
-        viewPager.setOffscreenPageLimit(reposAdapter.getCount());
-        viewPager.setAdapter(reposAdapter);
+        generalReposPresenter = new GeneralReposPresenter();
 
-        tabLayout.setupWithViewPager(viewPager);
+        ApiConnection apiConnection = ((GitskariosApplication) getActivity().getApplicationContext()).getApiConnection();
+        generalReposPresenter.setGeneralReposPresenterCallback(this);
+        generalReposPresenter.setApiConnection(apiConnection);
     }
 
     @Override
@@ -53,47 +65,41 @@ public class GeneralReposFragment extends BaseFragment {
         getActivity().setTitle(R.string.navigation_general_repositories);
     }
 
+    @Override
+    public void createViewPager(List<Fragment> items) {
+        if (viewPager != null && tabLayout != null) {
+            ReposPagerAdapter reposAdapter = new ReposPagerAdapter(getChildFragmentManager(), items);
+            viewPager.setOffscreenPageLimit(reposAdapter.getCount());
+            viewPager.setAdapter(reposAdapter);
+
+            tabLayout.setupWithViewPager(viewPager);
+        }
+    }
+
     private class ReposPagerAdapter extends FragmentPagerAdapter {
-        public ReposPagerAdapter(FragmentManager fragmentManager) {
+        private List<Fragment> fragmentList;
+
+        public ReposPagerAdapter(FragmentManager fragmentManager, List<Fragment> fragmentList) {
             super(fragmentManager);
+            this.fragmentList = fragmentList != null ? fragmentList : new ArrayList<Fragment>();
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                default:
-                    return ReposFragment.newInstance();
-                case 1:
-                    return StarredReposFragment.newInstance();
-                case 2:
-                    return WatchedReposFragment.newInstance();
-                case 3:
-                    return ContributedReposFragment.newInstance();
-                case 4:
-                    return ReposFragmentFromOrgs.newInstance();
-            }
+            return fragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return fragmentList.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                default:
-                    return getString(R.string.navigation_repos);
-                case 1:
-                    return getString(R.string.navigation_starred_repos);
-                case 2:
-                    return getString(R.string.navigation_watched_repos);
-                case 3:
-                    return getString(R.string.navigation_member_repos);
-                case 4:
-                    return getString(R.string.navigation_from_orgs);
+            if (fragmentList.get(position) instanceof TitleProvider) {
+                return getResources().getString(((TitleProvider) fragmentList.get(position)).getTitle());
+            } else {
+                return "";
             }
         }
     }

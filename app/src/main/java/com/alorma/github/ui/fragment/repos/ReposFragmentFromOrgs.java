@@ -2,8 +2,9 @@ package com.alorma.github.ui.fragment.repos;
 
 import com.alorma.data.repos.list.GitskariosOrganizationsRepositoriesClient;
 import com.alorma.github.R;
+import com.alorma.github.ui.listeners.TitleProvider;
 
-public class ReposFragmentFromOrgs extends BaseReposListFragment {
+public class ReposFragmentFromOrgs extends BaseReposListFragment implements TitleProvider {
 
     public static ReposFragmentFromOrgs newInstance() {
         return new ReposFragmentFromOrgs();
@@ -31,4 +32,8 @@ public class ReposFragmentFromOrgs extends BaseReposListFragment {
         return R.string.no_repositories;
     }
 
+    @Override
+    public int getTitle() {
+        return R.string.navigation_from_orgs;
+    }
 }

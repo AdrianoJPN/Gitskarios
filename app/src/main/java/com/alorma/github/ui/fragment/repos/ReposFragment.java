@@ -5,13 +5,14 @@ import android.os.Bundle;
 import com.alorma.data.repos.list.GitskariosUserRepositoriesClient;
 import com.alorma.github.GitskariosApplication;
 import com.alorma.github.R;
+import com.alorma.github.ui.listeners.TitleProvider;
 import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 
 import java.util.List;
 
-public class ReposFragment extends BaseReposListFragment {
+public class ReposFragment extends BaseReposListFragment implements TitleProvider{
 
     private String username;
 
@@ -69,4 +70,8 @@ public class ReposFragment extends BaseReposListFragment {
         return R.string.no_repositories;
     }
 
+    @Override
+    public int getTitle() {
+        return R.string.navigation_repos;
+    }
 }
