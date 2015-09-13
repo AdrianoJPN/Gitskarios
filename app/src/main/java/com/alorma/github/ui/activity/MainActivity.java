@@ -668,15 +668,20 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
 
     @Override
     public void onBackPressed() {
-        if (resultDrawer != null && resultDrawer.isDrawerOpen()) {
-            resultDrawer.closeDrawer();
+        if (mainPresenter.onBackPressed()) {
+            clearFragments();
+            finish();
         } else {
-            if (lastUsedFragment instanceof EventsListFragment) {
-                finish();
-            } else if (resultDrawer != null && (lastUsedFragment instanceof GeneralReposFragment || lastUsedFragment instanceof GeneralPeopleFragment)) {
-                resultDrawer.setSelection(R.id.nav_drawer_events);
-                clearFragments();
-                onUserEventsSelected();
+            if (resultDrawer != null && resultDrawer.isDrawerOpen()) {
+                resultDrawer.closeDrawer();
+            } else {
+                if (lastUsedFragment instanceof EventsListFragment) {
+                    finish();
+                } else if (resultDrawer != null && (lastUsedFragment instanceof GeneralReposFragment || lastUsedFragment instanceof GeneralPeopleFragment)) {
+                    resultDrawer.setSelection(R.id.nav_drawer_events);
+                    clearFragments();
+                    onUserEventsSelected();
+                }
             }
         }
     }

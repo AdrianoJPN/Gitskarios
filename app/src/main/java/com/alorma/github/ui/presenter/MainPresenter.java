@@ -1,18 +1,13 @@
 package com.alorma.github.ui.presenter;
 
-import android.support.annotation.ColorInt;
-
 import com.alorma.github.R;
+import com.alorma.github.ui.fragment.detail.repo.BackManager;
 import com.alorma.gitskarios.core.ApiConnection;
-import com.mikepenz.materialdrawer.model.BaseDrawerItem;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.octicons_typeface_library.Octicons;
 
 /**
  * Created by a557114 on 13/09/2015.
  */
-public class MainPresenter {
+public class MainPresenter implements BackManager {
 
     private MainPresenterCallback mainPresenterCallback;
 
@@ -55,6 +50,11 @@ public class MainPresenter {
 
     public int getSelectedDrawerItem() {
         return apiConnection.getType().equals("github") ? R.id.nav_drawer_events : R.id.nav_drawer_repositories;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return !apiConnection.getType().equals("github");
     }
 
     public interface MainPresenterCallback {
