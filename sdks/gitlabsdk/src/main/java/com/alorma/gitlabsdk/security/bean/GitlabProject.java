@@ -1,16 +1,26 @@
 package com.alorma.gitlabsdk.security.bean;
 
+import com.alorma.gitlabsdk.security.bean.dto.GitlabUser;
+
+import java.util.Date;
+
 /**
  * Created by a557114 on 09/09/2015.
  */
 public class GitlabProject {
     public int id;
     public String name;
-    public String name_with_namespace;
     public String description;
     public String path_with_namespace;
     public int visibility_level;
-    public GitlabProjectOwner owner;
+    public GitlabUser owner;
+    public String web_url;
+    public String default_branch;
+    public boolean issues_enabled;
+    public boolean wiki_enabled;
+    public boolean merge_requests_enabled;
+    public String created_at;
+    public GitlabNamespace namespace;
     /*
     {
     "id": 4,
@@ -52,47 +62,6 @@ public class GitlabProject {
     },
     "archived": false,
     "avatar_url": "http://example.com/uploads/project/avatar/4/uploads/avatar.png"
-  },
-  {
-    "id": 6,
-    "description": null,
-    "default_branch": "master",
-    "public": false,
-    "visibility_level": 0,
-    "ssh_url_to_repo": "git@example.com:brightbox/puppet.git",
-    "http_url_to_repo": "http://example.com/brightbox/puppet.git",
-    "web_url": "http://example.com/brightbox/puppet",
-    "tag_list": [
-      "example",
-      "puppet"
-    ],
-    "owner": {
-      "id": 4,
-      "name": "Brightbox",
-      "created_at": "2013-09-30T13:46:02Z"
-    },
-    "name": "Puppet",
-    "name_with_namespace": "Brightbox / Puppet",
-    "path": "puppet",
-    "path_with_namespace": "brightbox/puppet",
-    "issues_enabled": true,
-    "merge_requests_enabled": true,
-    "wiki_enabled": true,
-    "snippets_enabled": false,
-    "created_at": "2013-09-30T13:46:02Z",
-    "last_activity_at": "2013-09-30T13:46:02Z",
-    "creator_id": 3,
-    "namespace": {
-      "created_at": "2013-09-30T13:46:02Z",
-      "description": "",
-      "id": 4,
-      "name": "Brightbox",
-      "owner_id": 1,
-      "path": "brightbox",
-      "updated_at": "2013-09-30T13:46:02Z"
-    },
-    "archived": false,
-    "avatar_url": null
   }
      */
 }

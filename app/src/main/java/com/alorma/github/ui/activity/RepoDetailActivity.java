@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.alorma.github.R;
+import com.alorma.gitskarios.core.bean.dto.GitskariosPermissions;
+import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
 import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.github.sdk.bean.dto.request.RepoRequestDTO;
 import com.alorma.github.sdk.bean.dto.response.Permissions;
@@ -52,7 +54,8 @@ import retrofit.client.Response;
 /**
  * Created by Bernat on 17/07/2014.
  */
-public class RepoDetailActivity extends BackActivity implements BaseClient.OnResultCallback<Repo>, AdapterView.OnItemSelectedListener {
+public class RepoDetailActivity extends BackActivity
+        implements BaseClient.OnResultCallback<GitskariosRepository>, AdapterView.OnItemSelectedListener {
 
     public static final String REPO_INFO = "REPO_INFO";
     public static final String REPO_INFO_NAME = "REPO_INFO_NAME";
@@ -60,7 +63,7 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
 
     private static final int EDIT_REPO = 464;
 
-    private Repo currentRepo;
+    private GitskariosRepository currentRepo;
     private ViewPager viewPager;
     private List<Fragment> listFragments;
     private TabLayout tabLayout;
@@ -122,9 +125,9 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
 
     private void load(RepoInfo repoInfo) {
         this.requestRepoInfo = repoInfo;
-        GetRepoClient repoClient = new GetRepoClient(this, repoInfo);
+        /*GetRepoClient repoClient = new GetRepoClient(this, repoInfo);
         repoClient.setOnResultCallback(this);
-        //repoClient.execute();
+        repoClient.execute();*/
     }
 
     private RepoInfo getRepoInfo() {
@@ -186,8 +189,8 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
         super.onPrepareOptionsMenu(menu);
 
         if (menu.findItem(R.id.action_manage_repo) == null) {
-            if (currentRepo != null && currentRepo.permissions != null) {
-                if (currentRepo.permissions.admin) {
+            if (currentRepo != null && currentRepo.gitskariosPermissions != null) {
+                if (currentRepo.gitskariosPermissions.admin) {
                     getMenuInflater().inflate(R.menu.repo_detail_activity_permissions, menu);
                 }
             }
@@ -217,7 +220,7 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, currentRepo.full_name);
-        intent.putExtra(Intent.EXTRA_TEXT, currentRepo.svn_url);
+        intent.putExtra(Intent.EXTRA_TEXT, currentRepo.external_url);
         return intent;
     }
 
@@ -284,7 +287,7 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
 
 
     @Override
-    public void onResponseOk(Repo repo, Response r) {
+    public void onResponseOk(GitskariosRepository repo, Response r) {
         hideProgressDialog();
         if (repo != null) {
             this.currentRepo = repo;
@@ -302,7 +305,7 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
             if (listFragments != null) {
                 for (Fragment fragment : listFragments) {
                     if (fragment instanceof PermissionsManager) {
-                        Permissions permissions = repo.permissions;
+                        GitskariosPermissions permissions = repo.gitskariosPermissions;
                         ((PermissionsManager) fragment).setPermissions(permissions.admin, permissions.push, permissions.pull);
                     }
                 }
@@ -341,7 +344,7 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
             CommitsListFragment commitsListFragment = CommitsListFragment.newInstance(getRepoInfo());
             IssuesListFragment issuesListFragment = IssuesListFragment.newInstance(getRepoInfo(), false);
             PullRequestsListFragment pullRequestsListFragment = PullRequestsListFragment.newInstance(getRepoInfo());
-            RepoReleasesFragment repoReleasesFragment = RepoReleasesFragment.newInstance(getRepoInfo(), currentRepo.permissions);
+            RepoReleasesFragment repoReleasesFragment = RepoReleasesFragment.newInstance(getRepoInfo());
             RepoContributorsFragment repoCollaboratorsFragment = RepoContributorsFragment.newInstance(getRepoInfo(), currentRepo.owner);
 
             listFragments = new ArrayList<>();
@@ -378,9 +381,10 @@ public class RepoDetailActivity extends BackActivity implements BaseClient.OnRes
             if (resultCode == RESULT_OK && data != null) {
                 RepoRequestDTO repoRequestDTO = data.getParcelableExtra(ManageRepositoryActivity.CONTENT);
                 showProgressDialog(R.style.SpotDialog_edit_repo);
-                EditRepoClient editRepositoryClient = new EditRepoClient(this, getRepoInfo(), repoRequestDTO);
+                // TODO
+                /*EditRepoClient editRepositoryClient = new EditRepoClient(this, getRepoInfo(), repoRequestDTO);
                 editRepositoryClient.setOnResultCallback(this);
-                editRepositoryClient.execute();
+                editRepositoryClient.execute();*/
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }

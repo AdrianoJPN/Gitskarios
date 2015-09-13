@@ -14,6 +14,7 @@ import com.alorma.github.ui.adapter.users.UsersAdapter;
 import com.alorma.github.ui.fragment.base.PaginatedListFragment;
 import com.alorma.github.ui.listeners.TitleProvider;
 import com.alorma.githubintegration.mapper.user.list.ListUserMapper;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
 import java.util.ArrayList;
@@ -22,14 +23,14 @@ import java.util.List;
 /**
  * Created by Bernat on 11/04/2015.
  */
-public class RepoContributorsFragment extends PaginatedListFragment<List<Contributor>, UsersAdapter> implements TitleProvider, PermissionsManager, BackManager {
+public class RepoContributorsFragment extends PaginatedListFragment<List<GitskariosUser>, UsersAdapter> implements TitleProvider, PermissionsManager, BackManager {
 
     private static final String REPO_INFO = "REPO_INFO";
     private static final String OWNER_USER = "OWNER_USER";
     private RepoInfo repoInfo;
-    private User owner;
+    private GitskariosUser owner;
 
-    public static RepoContributorsFragment newInstance(RepoInfo repoInfo, User owner) {
+    public static RepoContributorsFragment newInstance(RepoInfo repoInfo, GitskariosUser owner) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(REPO_INFO, repoInfo);
         bundle.putParcelable(OWNER_USER, owner);
@@ -40,15 +41,16 @@ public class RepoContributorsFragment extends PaginatedListFragment<List<Contrib
     }
 
     protected void executeRequest() {
-        GetRepoContributorsClient contributorsClient = new GetRepoContributorsClient(getActivity(), repoInfo);
+        // TODO
+        /*GetRepoContributorsClient contributorsClient = new GetRepoContributorsClient(getActivity(), repoInfo);
         contributorsClient.setOnResultCallback(this);
-        contributorsClient.execute();
+        contributorsClient.execute();*/
     }
 
     protected void executePaginatedRequest(int page) {
-        GetRepoContributorsClient contributorsClient = new GetRepoContributorsClient(getActivity(), repoInfo, page);
+        /*GetRepoContributorsClient contributorsClient = new GetRepoContributorsClient(getActivity(), repoInfo, page);
         contributorsClient.setOnResultCallback(this);
-        contributorsClient.execute();
+        contributorsClient.execute();*/
     }
 
     @Override
@@ -94,26 +96,25 @@ public class RepoContributorsFragment extends PaginatedListFragment<List<Contrib
     }
 
     @Override
-    protected void onResponse(List<Contributor> contributors, boolean refreshing) {
+    protected void onResponse(List<GitskariosUser> contributors, boolean refreshing) {
         if (contributors != null) {
-            List<User> users = new ArrayList<>();
+            List<GitskariosUser> users = new ArrayList<>();
 
             users.add(owner);
-            for (Contributor contributor : contributors) {
+            for (GitskariosUser contributor : contributors) {
                 if (contributor != null
-                        && contributor.author != null
-                        && contributor.author.login != null
-                        && !contributor.author.login.equalsIgnoreCase(repoInfo.owner)) {
-                    users.add(users.size(), contributor.author);
+                        && contributor.login != null
+                        && !contributor.login.equalsIgnoreCase(repoInfo.owner)) {
+                    users.add(users.size(), contributor);
                 }
             }
 
             if (getAdapter() == null) {
                 UsersAdapter adapter = new UsersAdapter(LayoutInflater.from(getActivity()));
-                adapter.addAll(new ListUserMapper().toCore(users));
+                adapter.addAll(users);
                 setAdapter(adapter);
             } else {
-                getAdapter().addAll(new ListUserMapper().toCore(users));
+                getAdapter().addAll(users);
             }
         }
     }

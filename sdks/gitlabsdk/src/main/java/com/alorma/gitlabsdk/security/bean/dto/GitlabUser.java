@@ -10,4 +10,5 @@ public class GitlabUser {
     public String name;
     public String state;
     public String avatar_url;
+    public String created_at;
 }

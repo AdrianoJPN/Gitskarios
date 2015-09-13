@@ -22,21 +22,18 @@ import retrofit.RetrofitError;
  * Created by a557114 on 29/07/2015.
  */
 public class RepoReleasesFragment extends PaginatedListFragment<List<Release>, ReleasesAdapter>
-        implements TitleProvider, PermissionsManager {
+        implements TitleProvider {
 
     private static final String REPO_INFO = "REPO_INFO";
-    private static final String REPO_PERMISSIONS = "REPO_PERMISSIONS";
 
     private RepoInfo repoInfo;
-    private Permissions permissions;
 
-    public static RepoReleasesFragment newInstance(RepoInfo info, Permissions permissions) {
+    public static RepoReleasesFragment newInstance(RepoInfo info) {
         RepoReleasesFragment repoReleasesFragment = new RepoReleasesFragment();
 
         Bundle args = new Bundle();
 
         args.putParcelable(REPO_INFO, info);
-        args.putParcelable(REPO_PERMISSIONS, permissions);
 
         repoReleasesFragment.setArguments(args);
 
@@ -46,7 +43,6 @@ public class RepoReleasesFragment extends PaginatedListFragment<List<Release>, R
     @Override
     protected void loadArguments() {
         repoInfo = getArguments().getParcelable(REPO_INFO);
-        permissions = getArguments().getParcelable(REPO_PERMISSIONS);
     }
 
     @Override
@@ -101,14 +97,6 @@ public class RepoReleasesFragment extends PaginatedListFragment<List<Release>, R
     @Override
     protected int getNoDataText() {
         return R.string.no_releases;
-    }
-
-    @Override
-    public void setPermissions(boolean admin, boolean push, boolean pull) {
-        this.permissions = new Permissions();
-        this.permissions.admin = admin;
-        this.permissions.push = push;
-        this.permissions.pull = pull;
     }
 
     @Override

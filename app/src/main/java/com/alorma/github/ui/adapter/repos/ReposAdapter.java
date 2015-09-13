@@ -34,7 +34,7 @@ public class ReposAdapter extends RecyclerArrayAdapter<GitskariosRepository, Rep
 
     @Override
     protected void onBindViewHolder(ViewHolder holder, GitskariosRepository repo) {
-        holder.textTitle.setText(showOwnerName ? repo.owner : repo.name);
+        holder.textTitle.setText(showOwnerName ? repo.owner.login : repo.name);
         //new EmojiBitmapLoader().parseTextView(holder.textTitle);
 
         String starText = holder.itemView.getResources().getString(R.string.star_icon_text, repo.stargazers_count);
@@ -86,7 +86,7 @@ public class ReposAdapter extends RecyclerArrayAdapter<GitskariosRepository, Rep
                     GitskariosRepository item = getItem(getAdapterPosition());
                     if (item != null) {
                         RepoInfo repoInfo = new RepoInfo();
-                        repoInfo.owner = item.owner;
+                        repoInfo.owner = item.owner.login;
                         repoInfo.name = item.name;
                         Intent intent = RepoDetailActivity.createLauncherIntent(v.getContext(), repoInfo);
                         v.getContext().startActivity(intent);

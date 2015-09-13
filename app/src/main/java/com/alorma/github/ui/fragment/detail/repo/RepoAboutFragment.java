@@ -12,6 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alorma.github.R;
+import com.alorma.gitskarios.core.bean.dto.GitskariosPermissions;
+import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
+import com.alorma.gitskarios.core.bean.dto.GitskariosUserType;
 import com.alorma.gitskarios.core.client.BaseClient;
 import com.alorma.github.sdk.bean.dto.response.Repo;
 import com.alorma.github.sdk.bean.dto.response.User;
@@ -49,7 +53,7 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
     private static final String REPO_INFO = "REPO_INFO";
     private static final String REPO = "REPO";
     private RepoInfo repoInfo;
-    private Repo currentRepo;
+    private GitskariosRepository currentRepo;
     private TextView htmlContentView;
     private ImageView profileIcon;
 
@@ -65,7 +69,7 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
     private Boolean repoWatched = null;
     private View author;
 
-    public static RepoAboutFragment newInstance(Repo currentRepo, RepoInfo repoInfo) {
+    public static RepoAboutFragment newInstance(GitskariosRepository currentRepo, RepoInfo repoInfo) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(REPO_INFO, repoInfo);
         bundle.putParcelable(REPO, currentRepo);
@@ -151,10 +155,10 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
             @Override
             public void onClick(View v) {
                 if (currentRepo != null && currentRepo.owner != null) {
-                    if (currentRepo.owner.type == UserType.User) {
+                    if (currentRepo.owner.type == GitskariosUserType.User) {
                         Intent intent = ProfileActivity.createLauncherIntent(getActivity(), currentRepo.owner);
                         startActivity(intent);
-                    } else if (currentRepo.owner.type == UserType.Organization) {
+                    } else if (currentRepo.owner.type == GitskariosUserType.User) {
                         Intent intent = OrganizationActivity.launchIntent(getActivity(), currentRepo.owner.login);
                         startActivity(intent);
                     }
@@ -205,7 +209,7 @@ public class RepoAboutFragment extends Fragment implements TitleProvider, Branch
 
     private void setData() {
         if (currentRepo != null) {
-            User owner = currentRepo.owner;
+            GitskariosUser owner = currentRepo.owner;
             ImageLoader.getInstance().displayImage(owner.avatar_url, profileIcon);
             authorName.setText(owner.login);
 
