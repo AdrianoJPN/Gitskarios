@@ -326,7 +326,7 @@ public class MainActivity extends BaseActivity implements OnMenuItemSelectedList
             }
         });
         resultDrawer = drawer.build();
-        resultDrawer.setSelection(R.id.nav_drawer_repositories);
+        resultDrawer.setSelection(mainPresenter.getSelectedDrawerItem());
     }
 
     private void changeNotificationState(boolean enabled) {

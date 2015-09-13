@@ -1,6 +1,13 @@
 package com.alorma.github.ui.presenter;
 
+import android.support.annotation.ColorInt;
+
+import com.alorma.github.R;
 import com.alorma.gitskarios.core.ApiConnection;
+import com.mikepenz.materialdrawer.model.BaseDrawerItem;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.octicons_typeface_library.Octicons;
 
 /**
  * Created by a557114 on 13/09/2015.
@@ -12,23 +19,23 @@ public class MainPresenter {
     private ApiConnection apiConnection;
 
     public boolean isEventsEnabled() {
-        return false;
+        return apiConnection.getType().equals("github");
     }
 
     public boolean isRepositoriesEnabled() {
-        return false;
+        return true;
     }
 
     public boolean isPeopleEnabled() {
-        return false;
+        return apiConnection.getType().equals("github");
     }
 
     public boolean isGistEnabled() {
-        return false;
+        return apiConnection.getType().equals("github");
     }
 
     public boolean isNotificationsEnabled() {
-        return false;
+        return apiConnection.getType().equals("github");
     }
 
     public void setApiConnection(ApiConnection apiConnection) {
@@ -44,6 +51,10 @@ public class MainPresenter {
 
     public void setMainPresenterCallback(MainPresenterCallback mainPresenterCallback) {
         this.mainPresenterCallback = mainPresenterCallback;
+    }
+
+    public int getSelectedDrawerItem() {
+        return apiConnection.getType().equals("github") ? R.id.nav_drawer_events : R.id.nav_drawer_repositories;
     }
 
     public interface MainPresenterCallback {
