@@ -5,6 +5,8 @@ import android.content.Context;
 import com.alorma.github.sdk.bean.info.RepoInfo;
 import com.alorma.github.sdk.security.GitHub;
 import com.alorma.githubintegration.repo.GithubRepositoryDataSource;
+import com.alorma.gitlabintegration.project.GitlabProjectDataSource;
+import com.alorma.gitlabsdk.security.Gitlab;
 import com.alorma.gitskarios.core.ApiConnection;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.GitskariosFactory;
@@ -29,6 +31,8 @@ public class GitskariosRepositoryClient implements GitskariosFactory<GitskariosR
         if (apiConnection != null) {
             if (apiConnection.getType().equals(new GitHub().getType())) {
                 return new GithubRepositoryDataSource(context, repoInfo);
+            } else if (apiConnection.getType().equals(new Gitlab().getType())) {
+                return new GitlabProjectDataSource(context, repoInfo.repo_id);
             }
         }
         return null;

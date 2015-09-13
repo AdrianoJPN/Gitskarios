@@ -3,17 +3,13 @@ package com.alorma.gitlabintegration.project;
 import android.content.Context;
 
 import com.alorma.gitlabintegration.mapper.ListReposMapper;
-import com.alorma.gitlabintegration.mapper.UserMapper;
 import com.alorma.gitlabsdk.security.bean.GitlabProject;
-import com.alorma.gitlabsdk.security.bean.dto.GitlabUser;
-import com.alorma.gitlabsdk.security.service.project.GitlabProjectsOwnedClient;
-import com.alorma.gitlabsdk.security.service.user.GitlabRequestAuthUser;
+import com.alorma.gitlabsdk.security.service.project.list.GitlabProjectsOwnedClient;
 import com.alorma.gitskarios.core.BaseDataSource;
 import com.alorma.gitskarios.core.BaseMapper;
 import com.alorma.gitskarios.core.BaseMapperCallback;
 import com.alorma.gitskarios.core.Paginated;
 import com.alorma.gitskarios.core.bean.dto.GitskariosRepository;
-import com.alorma.gitskarios.core.bean.dto.GitskariosUser;
 
 import java.util.List;
 

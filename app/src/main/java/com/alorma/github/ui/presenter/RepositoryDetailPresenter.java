@@ -105,10 +105,10 @@ public class RepositoryDetailPresenter implements BaseDataSource.Callback<Gitska
 
             List<Fragment> listFragments = createListFragments(repository);
 
-            if (listFragments != null) {
+            GitskariosPermissions permissions = repository.gitskariosPermissions;
+            if (listFragments != null && permissions != null) {
                 for (Fragment fragment : listFragments) {
                     if (fragment instanceof PermissionsManager) {
-                        GitskariosPermissions permissions = repository.gitskariosPermissions;
                         ((PermissionsManager) fragment).setPermissions(permissions.admin, permissions.push, permissions.pull);
                     }
                 }

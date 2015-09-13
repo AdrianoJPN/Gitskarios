@@ -1,4 +1,4 @@
-package com.alorma.gitlabsdk.security.service.project;
+package com.alorma.gitlabsdk.security.service.project.list;
 
 import android.content.Context;
 

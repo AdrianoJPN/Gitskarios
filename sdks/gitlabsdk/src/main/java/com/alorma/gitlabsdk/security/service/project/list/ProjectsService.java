@@ -1,4 +1,4 @@
-package com.alorma.gitlabsdk.security.service.project;
+package com.alorma.gitlabsdk.security.service.project.list;
 
 import com.alorma.gitlabsdk.security.bean.GitlabProject;
 

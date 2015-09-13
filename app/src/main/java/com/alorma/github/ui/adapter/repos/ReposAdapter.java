@@ -96,6 +96,7 @@ public class ReposAdapter extends RecyclerArrayAdapter<GitskariosRepository, Rep
                     GitskariosRepository item = getItem(getAdapterPosition());
                     if (item != null) {
                         RepoInfo repoInfo = new RepoInfo();
+                        repoInfo.repo_id = item.id;
                         repoInfo.owner = item.owner.login;
                         repoInfo.name = item.name;
                         Intent intent = RepoDetailActivity.createLauncherIntent(v.getContext(), repoInfo);
