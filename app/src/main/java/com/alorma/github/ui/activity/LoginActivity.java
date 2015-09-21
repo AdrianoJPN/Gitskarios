@@ -33,9 +33,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.alorma.github.BuildConfig;
 import com.alorma.github.Interceptor;
 import com.alorma.github.R;
-import com.alorma.github.basesdk.ApiClient;
-import com.alorma.github.basesdk.client.BaseClient;
-import com.alorma.github.basesdk.client.credentials.GithubDeveloperCredentials;
+import com.alorma.gitskarios.core.ApiClient;
+import com.alorma.gitskarios.core.client.BaseClient;
+import com.alorma.github.sdk.security.GithubDeveloperCredentials;
 import com.alorma.github.sdk.bean.dto.response.Token;
 import com.alorma.github.sdk.bean.dto.response.User;
 import com.alorma.github.sdk.login.AccountsHelper;
@@ -444,13 +444,14 @@ public class LoginActivity extends AccountAuthenticatorActivity implements BaseC
     }
 
     private void checkAndEnableSyncAdapter(Account account) {
-        if (!ContentResolver.isSyncActive(account, getString(R.string.account_type))) {
-            ContentResolver.setIsSyncable(account, getString(R.string.account_type), ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE);
+        ContentResolver.setIsSyncable(account, getString(R.string.account_type), ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE);
+        if (ContentResolver.getSyncAutomatically(account, getString(R.string.account_type))) {
             ContentResolver.addPeriodicSync(
                     account,
                     getString(R.string.account_type),
                     Bundle.EMPTY,
                     1800);
+            ContentResolver.setSyncAutomatically(account, getString(R.string.account_type), true);
         }
     }
 
