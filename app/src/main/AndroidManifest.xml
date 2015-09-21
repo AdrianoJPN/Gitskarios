@@ -176,6 +176,21 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <!-- WIDGETS -->
+
+        <receiver
+            android:name=".ui.widget.RepoStarsScreenWidget"
+            android:icon="@mipmap/ic_launcher"
+            android:label="Repository stars">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/repo_stars_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>
